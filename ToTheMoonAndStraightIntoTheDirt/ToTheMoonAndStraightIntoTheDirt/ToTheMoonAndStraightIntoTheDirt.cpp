@@ -20,7 +20,8 @@ void Buy(unsigned int amountToBuy)
         money -= cost;
         assetOwned = amountToBuy;
 
-        // For Debugging only.
+        // For Debugging. Might double as feedback though.
+        std::cout << "Bought " << amountToBuy << " for " << cost << std::endl;
     }
     else
     {
@@ -31,74 +32,107 @@ void Buy(unsigned int amountToBuy)
 void Sell(unsigned int amountToSell)
 {
     assetOwned -= amountToSell;
-    money += amountToSell * assetPrice;
+    float sellPrice = amountToSell * assetPrice; // Calc price of sale.
+    money += sellPrice;
+
+    // For Debugging. Might double as feedback though.
+    std::cout << "Sold " << amountToSell << " for " << sellPrice << std::endl;
 }
 
-enum ListOfCommands {buy, sell};
+void Skip()
+{
+
+}
+
+/* To add a command: 
+        - Add an appropriate name to enum below
+        - Add if in HashCommands checking for string and returning matching enum type
+        */
+
+enum ListOfCommands {buy, sell, skip, error};
 
 ListOfCommands HashCommands(std::string const& inString)
 {
     if (inString == "buy") return buy;
-    if (inString == "b") return buy;
-    if (inString == "sell") return sell;
-    if (inString == "s") return sell;
+    else if (inString == "b") return buy;
+    else if (inString == "sell") return sell;
+    else if (inString == "s") return sell;
+    else if (inString == "skip") return skip;
+    else return error;
 }
 
 std::string ReadInput()
 {
     std::string userInput;
 
-    // Check string isn't empty
-    while (getline(std::cin, userInput) && userInput.empty())
+    // Get input & check string isn't empty
+    while (std::cout << "Input command: " && getline(std::cin, userInput) && userInput.empty())
     {
-        std::cerr << "ERROR. Nothing Entered ";
+        std::cerr << "ERROR. Nothing Entered " << std::endl;
     }
 
     return userInput;
 }
 
-void InputToCommand()
-{
-    std::string userInput;
-    std::string command;
-    int inputAmount = 0;
+// code assumes every input has a space change this
 
-    userInput = ReadInput();
+bool InputToCommand(std::string userInput)
+{
+    std::string command = "";
+    int inputAmount = 0;
 
     // Find space
     std::size_t spacePosition = userInput.find(" ");
 
-    // Assign start of string to space.
-    command = userInput.substr(0, spacePosition);
+    // if space found.
+    if (spacePosition != std::string::npos)
+    {
+        std::cout << "Else!";
+        // Assign start of string to space.
+        command = userInput.substr(0, spacePosition);
 
-    // Assign from space to end of string.
-    std::string amountString = userInput.substr(spacePosition, userInput.back());
-    inputAmount = std::stoi(amountString);
+        // Assign from space to end of string.
+        std::string amountString = userInput.substr(spacePosition, userInput.back());
+        inputAmount = std::stoi(amountString);
+    }
+    else
+    {
+        command = userInput;
+    }
 
-    // Convert to Enum, then execute corresponding command;
+    // Convert to Enum, then execute corresponding command.6
     switch (HashCommands(command))
     {
         case buy:
             Buy(inputAmount);
+            return true;
             break;
         case sell:
             Sell(inputAmount);
+            return true;
+            break;
+        case error:
+            std::cerr << "ERROR. Invalid Command" << std::endl;
+            return false;
             break;
     }
-        
 
-    //if (command == "buy")
-    //{
-    //    Buy(amountToBuy);
-    //}
+    // Failsafe
+    std::cout << "Heather you fucked up.";
+    return false;
 }
 
 int main()
 {
-    InputToCommand();
+    // Do and while do exactly same thing. Just more readable this way.
+    do
+    {
+        std::string userInput = "";
+        userInput = ReadInput();
+        InputToCommand(userInput);
+    }
+    // Loop till invalid input
+    while (!InputToCommand(ReadInput()));
 
-    std::cout << "Money: " << money << " Amount Owned: " << assetOwned << std::endl
-        << "Input amount to sell: ";
-
-    std::cout << "Money: " << money << " Amount Owned: " << assetOwned;
+    std::cout << "Money: " << money << " Amount Owned: " << assetOwned << std::endl;
 }
