@@ -19,6 +19,8 @@ void Buy(unsigned int amountToBuy)
     {
         money -= cost;
         assetOwned = amountToBuy;
+
+        // For Debugging only.
     }
     else
     {
@@ -34,20 +36,34 @@ void Sell(unsigned int amountToSell)
 
 enum ListOfCommands {buy, sell};
 
-ListOfCommands Hash(std::string const& inString)
+ListOfCommands HashCommands(std::string const& inString)
 {
     if (inString == "buy") return buy;
+    if (inString == "b") return buy;
     if (inString == "sell") return sell;
+    if (inString == "s") return sell;
 }
 
-void ReadInput()
+std::string ReadInput()
+{
+    std::string userInput;
+
+    // Check string isn't empty
+    while (getline(std::cin, userInput) && userInput.empty())
+    {
+        std::cerr << "ERROR. Nothing Entered ";
+    }
+
+    return userInput;
+}
+
+void InputToCommand()
 {
     std::string userInput;
     std::string command;
     int inputAmount = 0;
 
-    std::cout << "Input command: ";
-    getline(std::cin, userInput);
+    userInput = ReadInput();
 
     // Find space
     std::size_t spacePosition = userInput.find(" ");
@@ -59,7 +75,8 @@ void ReadInput()
     std::string amountString = userInput.substr(spacePosition, userInput.back());
     inputAmount = std::stoi(amountString);
 
-    switch (Hash(command))
+    // Convert to Enum, then execute corresponding command;
+    switch (HashCommands(command))
     {
         case buy:
             Buy(inputAmount);
@@ -78,7 +95,7 @@ void ReadInput()
 
 int main()
 {
-    ReadInput();
+    InputToCommand();
 
     std::cout << "Money: " << money << " Amount Owned: " << assetOwned << std::endl
         << "Input amount to sell: ";
