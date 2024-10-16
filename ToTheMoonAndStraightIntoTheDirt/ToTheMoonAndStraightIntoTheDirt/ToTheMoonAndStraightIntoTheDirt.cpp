@@ -4,6 +4,7 @@
 double money = 100; // needs negative values for debt
 unsigned int assetOwned = 0;
 float assetPrice = 10;
+int day = 1;
 
 const int ASSET_MAX_AMOUNT = 1'000'000; // A mil
 
@@ -39,9 +40,9 @@ void Sell(unsigned int amountToSell)
     std::cout << "Sold " << amountToSell << " for " << sellPrice << std::endl;
 }
 
-void Skip()
+void NextDay()
 {
-
+    day++;
 }
 
 /* To add a command: 
@@ -86,8 +87,7 @@ bool InputToCommand(std::string userInput)
 
     // if space found.
     if (spacePosition != std::string::npos)
-    {
-        std::cout << "Else!";
+    { 
         // Assign start of string to space.
         command = userInput.substr(0, spacePosition);
 
@@ -100,17 +100,21 @@ bool InputToCommand(std::string userInput)
         command = userInput;
     }
 
-    // Convert to Enum, then execute corresponding command.6
+    // Convert to Enum, then execute corresponding command.
     switch (HashCommands(command))
     {
         case buy:
             Buy(inputAmount);
+            NextDay();
             return true;
             break;
         case sell:
             Sell(inputAmount);
+            NextDay();
             return true;
             break;
+        case skip:
+            NextDay();
         case error:
             std::cerr << "ERROR. Invalid Command" << std::endl;
             return false;
@@ -136,3 +140,14 @@ int main()
 
     std::cout << "Money: " << money << " Amount Owned: " << assetOwned << std::endl;
 }
+
+/*
+$$$$$$$$\              $$$$$$$$\ $$\                       $$\      $$\                               
+\__$$  __|             \__$$  __|$$ |                      $$$\    $$$ |                              
+   $$ | $$$$$$\           $$ |   $$$$$$$\   $$$$$$\        $$$$\  $$$$ | $$$$$$\   $$$$$$\  $$$$$$$\  
+   $$ |$$  __$$\          $$ |   $$  __$$\ $$  __$$\       $$\$$\$$ $$ |$$  __$$\ $$  __$$\ $$  __$$\ 
+   $$ |$$ /  $$ |         $$ |   $$ |  $$ |$$$$$$$$ |      $$ \$$$  $$ |$$ /  $$ |$$ /  $$ |$$ |  $$ |
+   $$ |$$ |  $$ |         $$ |   $$ |  $$ |$$   ____|      $$ |\$  /$$ |$$ |  $$ |$$ |  $$ |$$ |  $$ |
+   $$ |\$$$$$$  |         $$ |   $$ |  $$ |\$$$$$$$\       $$ | \_/ $$ |\$$$$$$  |\$$$$$$  |$$ |  $$ |
+   \__| \______/          \__|   \__|  \__| \_______|      \__|     \__| \______/  \______/ \__|  \__|
+*/
