@@ -79,7 +79,7 @@ std::string ReadInput()
 
 bool InputToCommand(std::string userInput)
 {
-    std::string command = "";
+    std::string command = userInput;
     int inputAmount = 0;
 
     // Find space
@@ -95,10 +95,6 @@ bool InputToCommand(std::string userInput)
         std::string amountString = userInput.substr(spacePosition, userInput.back());
         inputAmount = std::stoi(amountString);
     }
-    else
-    {
-        command = userInput;
-    }
 
     // Convert to Enum, then execute corresponding command.
     switch (HashCommands(command))
@@ -107,18 +103,16 @@ bool InputToCommand(std::string userInput)
             Buy(inputAmount);
             NextDay();
             return true;
-            break;
         case sell:
             Sell(inputAmount);
             NextDay();
             return true;
-            break;
         case skip:
             NextDay();
+            return true;
         case error:
             std::cerr << "ERROR. Invalid Command" << std::endl;
             return false;
-            break;
     }
 
     // Failsafe
