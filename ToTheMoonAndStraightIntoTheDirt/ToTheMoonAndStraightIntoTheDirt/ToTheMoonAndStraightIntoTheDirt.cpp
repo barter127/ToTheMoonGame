@@ -2,7 +2,7 @@
 #include <string>
 
 double money = 100; // needs negative values for debt
-unsigned int assetOwned = 0;
+int assetOwned = 0;
 float assetPrice = 10;
 int day = 1;
 
@@ -10,34 +10,41 @@ const int ASSET_MAX_AMOUNT = 1'000'000; // A mil
 
 
 
-/* Can't buy negative amount
-   Sanitise value before function called */
 void Buy(unsigned int amountToBuy)
 {
     float cost = amountToBuy * assetPrice;
 
-    if (money - cost >= 0)
+    // If valid amountToBuy
+    if (money - cost >= 0 && amountToBuy > 0 && assetOwned + amountToBuy < ASSET_MAX_AMOUNT)
     {
         money -= cost;
-        assetOwned = amountToBuy;
+        assetOwned += amountToBuy;
 
-        // For Debugging. Might double as feedback though.
+        // Output feedback.
         std::cout << "Bought " << amountToBuy << " for " << cost << std::endl;
     }
-    else
-    {
-        std::cout << "You're trying to buy too much" << std::endl;
-    }
+    // If fail return appropriate error.
+    else if (money - cost < 0) std::cerr << "Err. Your pockets are empty buddy... not enough money";
+    else if (amountToBuy < 0) std::cerr << "Err. You have to buy at least 1 doughnut!";
+    else std::cerr << "Err. You’re trying to own more doughnuts than are in circulation! The market can’t supply that many!";
 }
 
-void Sell(unsigned int amountToSell)
+void Sell(int amountToSell)
 {
-    assetOwned -= amountToSell;
-    float sellPrice = amountToSell * assetPrice; // Calc price of sale.
-    money += sellPrice;
+    float sellPrice = 0;
 
-    // For Debugging. Might double as feedback though.
-    std::cout << "Sold " << amountToSell << " for " << sellPrice << std::endl;
+    // If valid amount to buy.
+    if ((assetOwned - amountToSell) >= 0 && amountToSell > 0)
+    {
+        assetOwned -= amountToSell;
+        sellPrice = amountToSell * assetPrice; // Calc price of sale.
+        money += sellPrice;
+
+        // Output feedback.
+        std::cout << "Sold " << amountToSell << " for " << sellPrice << std::endl;
+    }
+    else if ((assetOwned - amountToSell) < 0) std::cerr << "Err. You're trying to sell more than you own!";
+    else std::cerr << "Err. You have to sell at least 1 doughnut";
 }
 
 void NextDay()
@@ -88,10 +95,10 @@ bool InputToCommand(std::string userInput)
     // if space found.
     if (spacePosition != std::string::npos)
     { 
-        // Assign start of string to space.
+        // Set command as start of string to just before space.
         command = userInput.substr(0, spacePosition);
 
-        // Assign from space to end of string.
+        // Set amount just after space to end of string
         std::string amountString = userInput.substr(spacePosition, userInput.back());
         inputAmount = std::stoi(amountString);
     }
@@ -122,15 +129,12 @@ bool InputToCommand(std::string userInput)
 
 int main()
 {
-    // Do and while do exactly same thing. Just more readable this way.
-    do
+    while (true)
     {
         std::string userInput = "";
         userInput = ReadInput();
         InputToCommand(userInput);
     }
-    // Loop till invalid input
-    while (!InputToCommand(ReadInput()));
 
     std::cout << "Money: " << money << " Amount Owned: " << assetOwned << std::endl;
 }
