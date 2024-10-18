@@ -11,27 +11,6 @@ const int ASSET_MAX_AMOUNT = 1'000'000; // A mil
 // 480 bytes
 unsigned short marketGraph[120][2];
 
-void TestAssign()
-{
-    for (int i = 0; i < 120; i++)
-    {
-        marketGraph[i][0] = i;
-        marketGraph[i][1] = 1;
-    }
-}
-
-void TestRead()
-{
-    for (int i = 0; i < 120; i++)
-    {
-        if (marketGraph[i][1] == 1)
-        {
-            std::cout << marketGraph[i][0];
-            std::cout << "/";
-        }
-    }
-}
-
 void Buy(unsigned int amountToBuy)
 {
     float cost = amountToBuy * assetPrice;
@@ -146,6 +125,37 @@ void InputToCommand(std::string userInput)
 
     // Failsafe
     std::cout << "Heather you fucked up.";
+}
+
+void TestAssign()
+{
+    srand(time(NULL));
+
+    for (int i = 0; i < 120; i++)
+    {
+        marketGraph[i][0] = rand() % 26;
+        marketGraph[i][1] = (rand() % 3) -1;
+    }
+}
+
+void TestRead()
+{
+    for (int i = 0; i < 20; i++)
+    {
+        for (int j = 0; j < 120; j++)
+        {
+            if (i == marketGraph[j][0])
+            {
+                if (marketGraph[j][1] == 1) std::cout << "/";
+                else if (marketGraph[j][1] == 0) std::cout << "|";
+                else std::cout << "\\";
+            }
+            else std::cout << " ";
+        }
+
+        std::cout << "\n";
+    }
+
 }
 
 int main()
