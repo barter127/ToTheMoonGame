@@ -84,7 +84,7 @@ std::string ReadInput()
 
 // code assumes every input has a space change this
 
-bool InputToCommand(std::string userInput)
+void InputToCommand(std::string userInput)
 {
     std::string command = userInput;
     int inputAmount = 0;
@@ -109,22 +109,21 @@ bool InputToCommand(std::string userInput)
         case buy:
             Buy(inputAmount);
             NextDay();
-            return true;
+            break;
         case sell:
             Sell(inputAmount);
             NextDay();
-            return true;
+            break;
         case skip:
             NextDay();
-            return true;
+            break;
         case error:
             std::cerr << "Err. Invalid Command" << std::endl;
-            return false;
+            break;
     }
 
     // Failsafe
     std::cout << "Heather you fucked up.";
-    return false;
 }
 
 int main()
