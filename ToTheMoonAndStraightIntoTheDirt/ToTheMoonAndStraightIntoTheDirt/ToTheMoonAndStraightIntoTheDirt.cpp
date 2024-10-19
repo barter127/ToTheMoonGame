@@ -29,9 +29,9 @@ void Buy(unsigned int amountToBuy)
         std::cout << "Bought " << amountToBuy << " for " << cost << std::endl;
     }
     // If fail return appropriate error.
-    else if (money - cost < 0) std::cerr << "Err. Your pockets are empty buddy... not enough money";
-    else if (amountToBuy < 0) std::cerr << "Err. You have to buy at least 1 doughnut!";
-    else std::cerr << "Err. You’re trying to own more doughnuts than are in circulation! The market can’t supply that many!";
+    else if (money - cost < 0) std::cerr << "Err. Your pockets are empty buddy... not enough money" << std::endl;
+    else if (amountToBuy <= 0) std::cerr << "Err. You have to buy at least 1 doughnut!" << std::endl;
+    else if (assetOwned + amountToBuy < ASSET_MAX_AMOUNT) std::cerr << "Err. You're trying to own more doughnuts than are in circulation! The market can't supply that many!" << std::endl;
 }
 
 void Sell(int amountToSell)
@@ -48,8 +48,8 @@ void Sell(int amountToSell)
         // Output feedback.
         std::cout << "Sold " << amountToSell << " for " << sellPrice << std::endl;
     }
-    else if ((assetOwned - amountToSell) < 0) std::cerr << "Err. You're trying to sell more than you own!";
-    else std::cerr << "Err. You have to sell at least 1 doughnut";
+    else if ((assetOwned - amountToSell) < 0) std::cerr << "Err. You're trying to sell more than you own!" << std::endl;
+    else std::cerr << "Err. You have to sell at least 1 doughnut" << std::endl;
 }
 
 void NextDay()
@@ -83,11 +83,19 @@ std::string ReadInput()
     {
         std::cerr << "Err. Nothing Entered " << std::endl;
     }
-
     return userInput;
 }
 
-// code assumes every input has a space change this
+bool IsNumber(std::string amount)
+{
+    for (int i = 0; i < amount.length(); i++)
+    {
+        // Char found.
+        if (!isdigit(amount[i])) return false;
+    }
+
+    return true;
+}
 
 void InputToCommand(std::string userInput)
 {
@@ -104,8 +112,23 @@ void InputToCommand(std::string userInput)
         command = userInput.substr(0, spacePosition);
 
         // Set amount just after space to end of string
-        std::string amountString = userInput.substr(spacePosition, userInput.back());
-        inputAmount = std::stoi(amountString);
+        std::string amountString = userInput.substr(spacePosition + 1, userInput.back());
+
+        // check int is in string
+        if (!amountString.empty() && IsNumber(amountString))
+        {
+            inputAmount = std::stoi(amountString);
+        }
+        else if (!IsNumber(amountString))
+        {
+            std::cerr << "Err. Number contains char" << std::endl;
+            return;
+        }
+        else
+        {
+            std::cerr << "Err. Nothing Input" << std::endl;
+            return;
+        }
     }
 
     // Convert to Enum, then execute corresponding command.
@@ -126,9 +149,6 @@ void InputToCommand(std::string userInput)
             std::cerr << "Err. Invalid Command" << std::endl;
             break;
     }
-
-    // Failsafe
-    std::cout << "Heather you fucked up.";
 }
 
 void TestAssign()
@@ -182,8 +202,8 @@ void TestRead()
 
 int main()
 {
-    TestAssign();
-    TestRead();
+    //TestAssign();
+    //TestRead();
 
     //std::cout << "------------------------------------------------------------------------------------------------------------------------" << std::endl;
     //std::cout << "------------------------------------------------------------------------------------------------------------------------" << std::endl;
@@ -211,16 +231,16 @@ int main()
     //std::cout << " /" << std::endl;
     //std::cout << "/" << std::endl << std::endl << std::endl;
 
-    //while (true)
-    //{
-    //    // This could all be written on 1 line but it's not pretty.
-    //    std::string userInput = "";
-    //    userInput = ReadInput();
-    //    InputToCommand(userInput);
+    while (true)
+    {
+        // This could all be written on 1 line but it's not pretty.
+        std::string userInput = "";
+        userInput = ReadInput();
+        InputToCommand(userInput);
 
 
-    //    //system("cls");
-    //}
+        //system("cls");
+    }
 
     std::cout << "Money: " << money << " Amount Owned: " << assetOwned << std::endl;
 }
