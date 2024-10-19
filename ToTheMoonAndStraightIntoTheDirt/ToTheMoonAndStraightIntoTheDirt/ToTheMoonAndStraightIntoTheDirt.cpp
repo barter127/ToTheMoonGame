@@ -1,15 +1,19 @@
 #include <iostream>
 #include <string>
+#include <chrono>
 
 double money = 100; // needs negative values for debt
 int assetOwned = 0;
 float assetPrice = 10;
 int day = 1;
 
+int lastPriceHeight = 12;
+int lastFluctuation = 0;
+
 const int ASSET_MAX_AMOUNT = 1'000'000; // A mil
 
 // 480 bytes
-unsigned short marketGraph[120][2];
+short marketGraph[120][2];
 
 void Buy(unsigned int amountToBuy)
 {
@@ -133,21 +137,38 @@ void TestAssign()
 
     for (int i = 0; i < 120; i++)
     {
-        marketGraph[i][0] = rand() % 26;
         marketGraph[i][1] = (rand() % 3) -1;
+
+        // Cache field for readability and slight performance boost.
+        int currentFluctuation = marketGraph[i][1];
+
+        if (lastFluctuation == -1 || lastFluctuation == 0 && currentFluctuation == -1)
+        {
+            marketGraph[i][0] = --lastPriceHeight;
+        }
+        else if (lastFluctuation == 1 && currentFluctuation == 0 || currentFluctuation == 1)
+        {
+            marketGraph[i][0] = lastPriceHeight++;
+        }
+        else
+        {
+            marketGraph[i][0] = lastPriceHeight;
+        }
+
     }
 }
 
 void TestRead()
 {
-    for (int i = 0; i < 20; i++)
+    auto old = std::chrono::steady_clock::now();
+    for (int i = 25; i > 0; i--)
     {
         for (int j = 0; j < 120; j++)
         {
             if (i == marketGraph[j][0])
             {
                 if (marketGraph[j][1] == 1) std::cout << "/";
-                else if (marketGraph[j][1] == 0) std::cout << "|";
+                else if (marketGraph[j][1] == 0) std::cout << "_";
                 else std::cout << "\\";
             }
             else std::cout << " ";
@@ -155,7 +176,8 @@ void TestRead()
 
         std::cout << "\n";
     }
-
+    auto time = std::chrono::steady_clock::now() - old;
+    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(time).count();
 }
 
 int main()
@@ -189,16 +211,16 @@ int main()
     //std::cout << " /" << std::endl;
     //std::cout << "/" << std::endl << std::endl << std::endl;
 
-    while (true)
-    {
-        // This could all be written on 1 line but it's not pretty.
-        std::string userInput = "";
-        userInput = ReadInput();
-        InputToCommand(userInput);
+    //while (true)
+    //{
+    //    // This could all be written on 1 line but it's not pretty.
+    //    std::string userInput = "";
+    //    userInput = ReadInput();
+    //    InputToCommand(userInput);
 
 
-        system("cls");
-    }
+    //    //system("cls");
+    //}
 
     std::cout << "Money: " << money << " Amount Owned: " << assetOwned << std::endl;
 }
