@@ -111,7 +111,7 @@ void InputToCommand(std::string userInput)
         // Set command as start of string to just before space.
         command = userInput.substr(0, spacePosition);
 
-        // Set amount just after space to end of string
+        // Set amount just after space to end of string.
         std::string amountString = userInput.substr(spacePosition + 1, userInput.back());
 
         // check int is in string
@@ -178,15 +178,18 @@ void TestAssign()
     }
 }
 
-void TestRead()
+void DrawGraph()
 {
-    auto old = std::chrono::steady_clock::now();
+    // Loop for height.
     for (int i = 25; i > 0; i--)
     {
-        for (int j = 0; j < 120; j++)
+        // Loop for width.
+        for (int j = 0; j < sizeof marketGraph / sizeof marketGraph[0]; j++)
         {
+            // If there is a value at this position.
             if (i == marketGraph[j][0])
             {
+                // Draw corresponding output.
                 if (marketGraph[j][1] == 1) std::cout << "/";
                 else if (marketGraph[j][1] == 0) std::cout << "_";
                 else std::cout << "\\";
@@ -196,14 +199,46 @@ void TestRead()
 
         std::cout << "\n";
     }
-    auto time = std::chrono::steady_clock::now() - old;
-    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(time).count();
+}
+
+void UpdateGraph()
+{
+    // Move all fields over by one.
+    int lengthOfArray = sizeof marketGraph / sizeof marketGraph[0];
+    for (int i = 0; i < lengthOfArray - 1; i++) // Loop 1 less than length.
+    {
+        marketGraph[i][0] = marketGraph[i + 1][0];
+        marketGraph[i][1] = marketGraph[i + 1][1];
+    }
+
+    // Randomise fluctuation and assign to array.
+    marketGraph[lengthOfArray - 1][1] = (rand() % 3) - 1;
+
+    // Cache field for readability and slight performance boost.
+    int currentFluctuation = marketGraph[lengthOfArray - 1][1];
+
+    if (lastFluctuation == -1 || lastFluctuation == 0 && currentFluctuation == -1)
+    {
+        marketGraph[lengthOfArray - 1][0] = --lastPriceHeight;
+    }
+    else if (lastFluctuation == 1 && currentFluctuation == 0 || currentFluctuation == 1)
+    {
+        marketGraph[lengthOfArray - 1][0] = lastPriceHeight++;
+    }
+    else
+    {
+        marketGraph[lengthOfArray - 1][0] = lastPriceHeight;
+    }
+
+    // Clear and draw graph.
+    system("cls");
+    DrawGraph();
 }
 
 int main()
 {
-    //TestAssign();
-    //TestRead();
+    TestAssign();
+    DrawGraph();
 
     //std::cout << "------------------------------------------------------------------------------------------------------------------------" << std::endl;
     //std::cout << "------------------------------------------------------------------------------------------------------------------------" << std::endl;
@@ -238,8 +273,7 @@ int main()
         userInput = ReadInput();
         InputToCommand(userInput);
 
-
-        //system("cls");
+        UpdateGraph();
     }
 
     std::cout << "Money: " << money << " Amount Owned: " << assetOwned << std::endl;
