@@ -85,7 +85,8 @@ int main()
     {
         // This could all be written on 1 line but it's not pretty.
         std::string userInput = "";
-        userInput = ReadInput();
+        std::cout << "Input command: ";
+        userInput = GetValidString();
         InputToCommand(userInput);
 
         UpdateGraph();
@@ -98,6 +99,8 @@ int main()
     std::cout << "Money: " << money << " Amount Owned: " << assetOwned << std::endl;
 }
 
+
+// Commands.
 void Buy(unsigned int amountToBuy)
 {
     float cost = amountToBuy * assetPrice;
@@ -138,18 +141,6 @@ void Sell(int amountToSell)
 void NextDay()
 {
     day++;
-}
-
-std::string ReadInput()
-{
-    std::string userInput;
-
-    // Get input & check string isn't empty
-    while (std::cout << "Input command: " && getline(std::cin, userInput) && userInput.empty())
-    {
-        std::cerr << "Err. Nothing Entered " << std::endl;
-    }
-    return userInput;
 }
 
 void InputToCommand(std::string userInput)
@@ -206,6 +197,9 @@ void InputToCommand(std::string userInput)
     }
 }
 
+
+
+// Graph.
 void DrawGraph()
 {
     // Loop for height.

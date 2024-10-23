@@ -23,3 +23,19 @@ std::string ToLowerCase(std::string inputString)
 
     return inputString;
 }
+
+/*
+Loops until a non-empty string is input.
+Returns error message if string is empty.
+*/
+std::string GetValidString()
+{
+    std::string userInput;
+
+    // Get input & check string isn't empty
+    while (getline(std::cin, userInput) && userInput.empty())
+    {
+        std::cerr << "Err. Nothing Entered " << std::endl;
+    }
+    return userInput;
+}
