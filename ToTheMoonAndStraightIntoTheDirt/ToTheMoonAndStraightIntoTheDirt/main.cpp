@@ -97,7 +97,7 @@ int main()
         system("cls");
         DrawGraph();
 
-        std::cout << lastCommandOutput;
+        std::cout << lastCommandOutput << std::endl;
     }
 
     std::cout << "Money: " << money << " Amount Owned: " << assetOwned << std::endl;
@@ -112,7 +112,7 @@ void Buy(unsigned int amountToBuy)
     // If invalid input print proper error msg.
     if (money - cost < 0) std::cerr << "Err. Your pockets are empty buddy... not enough money" << std::endl;
     else if (amountToBuy <= 0) std::cerr << "Err. You have to buy at least 1 doughnut!" << std::endl;
-    else if (assetOwned + amountToBuy < ASSET_MAX_AMOUNT) std::cerr << "Err. You're trying to own more doughnuts than are in circulation! The market can't supply that many!" << std::endl;
+    else if (assetOwned + amountToBuy > ASSET_MAX_AMOUNT) std::cerr << "Err. You're trying to own more doughnuts than are in circulation! The market can't supply that many!" << std::endl;
 
     else // If Valid input (has enough money, is buying at least 1, and not attempting to buy more than avalible)
     {
