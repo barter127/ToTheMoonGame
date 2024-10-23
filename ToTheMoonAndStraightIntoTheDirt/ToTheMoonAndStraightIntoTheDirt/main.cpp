@@ -1,12 +1,14 @@
 #include <iostream>
 #include <string>
-#include <chrono>
+#include "inputvalidation.h"
 
+// Player statistics.
 double money = 100; // needs negative values for debt
 int assetOwned = 0;
 float assetPrice = 10;
 int day = 1;
 
+// Graph drawing.
 int lastPriceHeight = 12;
 int lastFluctuation = 0;
 const int GRAPH_TOP = 25;
@@ -17,7 +19,36 @@ const int ASSET_MAX_AMOUNT = 1'000'000; // A mil
 // 480 bytes
 short marketGraph[120][2];
 
+// List of commands.
+void Buy(unsigned int amountToBuy);
+void Sell(int amountToSell);
+void NextDay();
+
+/* To add a command:
+        - Add an appropriate name to enum ListOfCommands
+        - Add if in HashCommands checking for string and return matching enum type
+        */
+enum ListOfCommands { buy, sell, skip, error };
+ListOfCommands HashCommands(std::string const& inString)
+{
+    if (inString == "buy") return buy;
+    else if (inString == "b") return buy;
+    else if (inString == "sell") return sell;
+    else if (inString == "s") return sell;
+    else if (inString == "skip") return skip;
+    else return error;
+}
+
+// Handle input.
+std::string ReadInput();
+void InputToCommand(std::string userInput);
+
+// Handle graph.
+void DrawGraph();
 void UpdateGraph();
+// Used only once.
+void IntialiseGraph();
+
 
 int main()
 {
@@ -109,23 +140,6 @@ void NextDay()
     day++;
 }
 
-/* To add a command:
-        - Add an appropriate name to enum below
-        - Add if in HashCommands checking for string and return matching enum type
-        */
-
-enum ListOfCommands { buy, sell, skip, error };
-
-ListOfCommands HashCommands(std::string const& inString)
-{
-    if (inString == "buy") return buy;
-    else if (inString == "b") return buy;
-    else if (inString == "sell") return sell;
-    else if (inString == "s") return sell;
-    else if (inString == "skip") return skip;
-    else return error;
-}
-
 std::string ReadInput()
 {
     std::string userInput;
@@ -136,18 +150,6 @@ std::string ReadInput()
         std::cerr << "Err. Nothing Entered " << std::endl;
     }
     return userInput;
-}
-
-// Reused from stonks game/sim.
-bool IsNumber(std::string amount)
-{
-    for (int i = 0; i < amount.length(); i++)
-    {
-        // Char found.
-        if (!isdigit(amount[i])) return false;
-    }
-
-    return true;
 }
 
 void InputToCommand(std::string userInput)
@@ -201,27 +203,6 @@ void InputToCommand(std::string userInput)
     case error:
         std::cerr << "Err. Invalid Command" << std::endl;
         break;
-    }
-}
-
-void TestAssign()
-{
-    srand(time(NULL));
-
-    for (int i = 0; i < 120; i++)
-    {
-        marketGraph[i][1] = (rand() % 3) - 1;
-
-        // Cache field for readability and slight performance boost.
-        int currentFluctuation = marketGraph[i][1];
-
-        if (lastFluctuation == -1 || lastFluctuation == 0 && currentFluctuation == -1)
-            marketGraph[i][0] = --lastPriceHeight;
-
-        else if (lastFluctuation == 1 && currentFluctuation == 0 || currentFluctuation == 1)
-            marketGraph[i][0] = lastPriceHeight++;
-        else
-            marketGraph[i][0] = lastPriceHeight;
     }
 }
 
@@ -286,7 +267,6 @@ void UpdateGraph()
     }
 }
 
-// Called only once.
 void IntialiseGraph()
 {
     // Set Seed.
@@ -297,14 +277,3 @@ void IntialiseGraph()
         UpdateGraph();
     }
 }
-
-/*
-$$$$$$$$\              $$$$$$$$\ $$\                       $$\      $$\                               
-\__$$  __|             \__$$  __|$$ |                      $$$\    $$$ |                              
-   $$ | $$$$$$\           $$ |   $$$$$$$\   $$$$$$\        $$$$\  $$$$ | $$$$$$\   $$$$$$\  $$$$$$$\  
-   $$ |$$  __$$\          $$ |   $$  __$$\ $$  __$$\       $$\$$\$$ $$ |$$  __$$\ $$  __$$\ $$  __$$\ 
-   $$ |$$ /  $$ |         $$ |   $$ |  $$ |$$$$$$$$ |      $$ \$$$  $$ |$$ /  $$ |$$ /  $$ |$$ |  $$ |
-   $$ |$$ |  $$ |         $$ |   $$ |  $$ |$$   ____|      $$ |\$  /$$ |$$ |  $$ |$$ |  $$ |$$ |  $$ |
-   $$ |\$$$$$$  |         $$ |   $$ |  $$ |\$$$$$$$\       $$ | \_/ $$ |\$$$$$$  |\$$$$$$  |$$ |  $$ |
-   \__| \______/          \__|   \__|  \__| \_______|      \__|     \__| \______/  \______/ \__|  \__|
-*/
