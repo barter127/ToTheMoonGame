@@ -35,7 +35,7 @@ std::string GetValidString()
     // Get input & check string isn't empty
     while (getline(std::cin, userInput) && userInput.empty())
     {
-        std::cerr << "Err. Nothing Entered " << std::endl;
+        std::cerr << "Err. Nothing Entered. Try again. " << std::endl;
     }
     return userInput;
 }

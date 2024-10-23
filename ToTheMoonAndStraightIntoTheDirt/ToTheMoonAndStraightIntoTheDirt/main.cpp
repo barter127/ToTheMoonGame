@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <sstream>
 #include "inputvalidation.h"
 
 // Player statistics.
@@ -13,6 +14,8 @@ int lastPriceHeight = 12;
 int lastFluctuation = 0;
 const int GRAPH_TOP = 25;
 const int GRAPH_BOTTOM = 1;
+
+std::string lastCommandOutput;
 
 const int ASSET_MAX_AMOUNT = 1'000'000; // A mil
 
@@ -39,8 +42,6 @@ ListOfCommands HashCommands(std::string const& inString)
     else return error;
 }
 
-// Handle input.
-std::string ReadInput();
 void InputToCommand(std::string userInput);
 
 // Handle graph.
@@ -91,9 +92,11 @@ int main()
 
         UpdateGraph();
 
-        // Clear and draw graph.
+         // Clear and draw graph.
         system("cls");
         DrawGraph();
+
+        std::cout << lastCommandOutput;
     }
 
     std::cout << "Money: " << money << " Amount Owned: " << assetOwned << std::endl;
@@ -111,8 +114,10 @@ void Buy(unsigned int amountToBuy)
         money -= cost;
         assetOwned += amountToBuy;
 
-        // Output feedback.
-        std::cout << "Bought " << amountToBuy << " for " << cost << std::endl;
+        // Output feedback and save output for when console clears.
+        std::ostringstream buffer;
+        buffer << "Bought " << amountToBuy << " for " << cost << std::endl;
+        lastCommandOutput = buffer.str();
     }
     // If fail return appropriate error.
     else if (money - cost < 0) std::cerr << "Err. Your pockets are empty buddy... not enough money" << std::endl;
@@ -131,8 +136,11 @@ void Sell(int amountToSell)
         sellPrice = amountToSell * assetPrice; // Calc price of sale.
         money += sellPrice;
 
-        // Output feedback.
-        std::cout << "Sold " << amountToSell << " for " << sellPrice << std::endl;
+        // Output feedback and save output for when console clears.
+        std::ostringstream buffer;
+        buffer << "Sold " << amountToSell << " for " << sellPrice << std::endl;
+        lastCommandOutput = buffer.str();
+
     }
     else if ((assetOwned - amountToSell) < 0) std::cerr << "Err. You're trying to sell more than you own!" << std::endl;
     else std::cerr << "Err. You have to sell at least 1 doughnut" << std::endl;
