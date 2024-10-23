@@ -30,6 +30,7 @@ void NextDay();
 /* To add a command:
         - Add an appropriate name to enum ListOfCommands
         - Add if in HashCommands checking for string and return matching enum type
+        - If the command causes the graph to be redrawn save any console output using ostringstream and the lastCommandOutput var.
         */
 enum ListOfCommands { buy, sell, skip, error };
 ListOfCommands HashCommands(std::string const& inString)
@@ -108,8 +109,12 @@ void Buy(unsigned int amountToBuy)
 {
     float cost = amountToBuy * assetPrice;
 
-    // If valid amountToBuy
-    if (money - cost >= 0 && amountToBuy > 0 && assetOwned + amountToBuy < ASSET_MAX_AMOUNT)
+    // If invalid input print proper error msg.
+    if (money - cost < 0) std::cerr << "Err. Your pockets are empty buddy... not enough money" << std::endl;
+    else if (amountToBuy <= 0) std::cerr << "Err. You have to buy at least 1 doughnut!" << std::endl;
+    else if (assetOwned + amountToBuy < ASSET_MAX_AMOUNT) std::cerr << "Err. You're trying to own more doughnuts than are in circulation! The market can't supply that many!" << std::endl;
+
+    else // If Valid input (has enough money, is buying at least 1, and not attempting to buy more than avalible)
     {
         money -= cost;
         assetOwned += amountToBuy;
@@ -119,18 +124,17 @@ void Buy(unsigned int amountToBuy)
         buffer << "Bought " << amountToBuy << " for " << cost << std::endl;
         lastCommandOutput = buffer.str();
     }
-    // If fail return appropriate error.
-    else if (money - cost < 0) std::cerr << "Err. Your pockets are empty buddy... not enough money" << std::endl;
-    else if (amountToBuy <= 0) std::cerr << "Err. You have to buy at least 1 doughnut!" << std::endl;
-    else if (assetOwned + amountToBuy < ASSET_MAX_AMOUNT) std::cerr << "Err. You're trying to own more doughnuts than are in circulation! The market can't supply that many!" << std::endl;
 }
 
 void Sell(int amountToSell)
 {
     float sellPrice = 0;
 
-    // If valid amount to buy.
-    if ((assetOwned - amountToSell) >= 0 && amountToSell > 0)
+    // If invalid print proper error msg.
+    if ((assetOwned - amountToSell) < 0) std::cerr << "Err. You're trying to sell more than you own!" << std::endl;
+    else if (amountToSell < 0) std::cerr << "Err. You have to sell at least 1 doughnut" << std::endl;
+
+    else // If Valid input (selling an amount they own and selling at least 1)
     {
         assetOwned -= amountToSell;
         sellPrice = amountToSell * assetPrice; // Calc price of sale.
@@ -140,10 +144,7 @@ void Sell(int amountToSell)
         std::ostringstream buffer;
         buffer << "Sold " << amountToSell << " for " << sellPrice << std::endl;
         lastCommandOutput = buffer.str();
-
     }
-    else if ((assetOwned - amountToSell) < 0) std::cerr << "Err. You're trying to sell more than you own!" << std::endl;
-    else std::cerr << "Err. You have to sell at least 1 doughnut" << std::endl;
 }
 
 void NextDay()
