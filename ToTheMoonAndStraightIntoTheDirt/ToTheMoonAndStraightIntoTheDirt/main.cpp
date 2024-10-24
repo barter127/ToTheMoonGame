@@ -10,7 +10,8 @@ float assetPrice = 10;
 int day = 1;
 
 // Graph drawing.
-int lastPriceHeight = 12;
+int lastPrice = 12;
+int lastGraphHeight = 12;
 int lastFluctuation = 0;
 const int GRAPH_TOP = 25;
 const int GRAPH_BOTTOM = 1;
@@ -29,7 +30,7 @@ void NextDay();
 
 /* To add a command:
         - Add an appropriate name to enum ListOfCommands
-        - Add if in HashCommands checking for string and return matching enum type
+        - Add if in HashCommands() checking for string and return matching enum type
         - If the command causes the graph to be redrawn save any console output using ostringstream and the lastCommandOutput var.
         */
 enum ListOfCommands { buy, sell, skip, error };
@@ -45,59 +46,39 @@ ListOfCommands HashCommands(std::string const& inString)
 
 void InputToCommand(std::string userInput);
 
+// Handle Price.
+inline void IncreasePrice(int increase);
+inline void DecreasePrice(int decrease);
+
 // Handle graph.
 void DrawGraph();
-void UpdateGraph();
+void UpdateMarket();
 // Used only once.
 void IntialiseGraph();
-
 
 int main()
 {
     IntialiseGraph();
     DrawGraph();
 
-    //std::cout << "------------------------------------------------------------------------------------------------------------------------" << std::endl;
-    //std::cout << "------------------------------------------------------------------------------------------------------------------------" << std::endl;
-    //std::cout << "------------------------------------------------------------------------------------------------------------------------" << std::endl;
-    //std::cout << "------------------------------------------------------------------------------------------------------------------------" << std::endl;
-    //std::cout << "------------------------------------------------------------------------------------------------------------------------" << std::endl;
-    //std::cout << "------------------------------------------------------------------------------------------------------------------------" << std::endl;
-    //std::cout << "------------------------------------------------------------------------------------------------------------------------" << std::endl;
-    //std::cout << "------------------------------------------------------------------------------------------------------------------------" << std::endl;
-    //std::cout << "------------------------------------------------------------------------------------------------------------------------" << std::endl;
-    //std::cout << "------------------------------------------------------------------------------------------------------------------------" << std::endl;
-    //std::cout << "------------------------------------------------------------------------------------------------------------------------" << std::endl;
-    //std::cout << "------------------------------------------------------------------------------------------------------------------------" << std::endl;
-    //std::cout << "------------------------------------------------------------------------------------------------------------------------" << std::endl;
-    //std::cout << "------------------------------------------------------------------------------------------------------------------------" << std::endl;
-    //std::cout << "------------------------------------------------------------------------------------------------------------------------" << std::endl;
-    //std::cout << "------------------------------------------------------------------------------------------------------------------------" << std::endl;
-    //std::cout << "------------------------------------------------------------------------------------------------------------------------" << std::endl;
-    //std::cout << "------------------------------------------------------------------------------------------------------------------------" << std::endl;
-    //std::cout << "------------------------------------------------------------------------------------------------------------------------" << std::endl;
-    //std::cout << "------------------------------------------------------------------------------------------------------------------------" << std::endl;
-    //std::cout << "------------------------------------------------------------------------------------------------------------------------" << std::endl;
-    //std::cout << "------------------------------------------------------------------------------------------------------------------------" << std::endl;           
-    //std::cout << "  /" << std::endl;
-    //std::cout << " /" << std::endl;
-    //std::cout << "/" << std::endl << std::endl << std::endl;
-
     while (true)
     {
         // This could all be written on 1 line but it's not pretty.
         std::string userInput = "";
+        std::cout << "Current price: " << assetPrice;
         std::cout << "Input command: ";
         userInput = GetValidString();
         InputToCommand(userInput);
 
-        UpdateGraph();
+        UpdateMarket();
 
          // Clear and draw graph.
-        system("cls");
-        DrawGraph();
+
+        //system("cls");
+        //DrawGraph();
 
         std::cout << lastCommandOutput << std::endl;
+        std::cout << "Current price: " << assetPrice;
     }
 
     std::cout << "Money: " << money << " Amount Owned: " << assetOwned << std::endl;
@@ -149,7 +130,9 @@ void Sell(int amountToSell)
 
 void NextDay()
 {
-    day++;
+    std::ostringstream buffer;
+    buffer << "Day Skipped";
+    lastCommandOutput = buffer.str();
 }
 
 void InputToCommand(std::string userInput)
@@ -206,7 +189,16 @@ void InputToCommand(std::string userInput)
     }
 }
 
+// Price.
+inline void IncreasePrice(int increase)
+{
+    assetPrice += increase;
+}
 
+inline void DecreasePrice(int decrease)
+{
+    assetPrice += decrease;
+}
 
 // Graph.
 void DrawGraph()
@@ -232,7 +224,7 @@ void DrawGraph()
     }
 }
 
-void UpdateGraph()
+void UpdateMarket()
 {
     // Move all fields over by one.
     int lengthOfArray = sizeof marketGraph / sizeof marketGraph[0];
@@ -243,31 +235,36 @@ void UpdateGraph()
     }
 
     // Randomise fluctuation and assign to array.
-    int fluctuationRange = lastPriceHeight >= GRAPH_TOP ? 2 : 3;
-    int fluctuation = (rand() % fluctuationRange) - 1;
+    int lowest = -25, highest = 25;
+    int range = (highest - lowest) + 1;
+    int random_integer = lowest + int(range * rand() / (RAND_MAX + 1.0));
+    std::cout << random_integer;
 
-    if (lastPriceHeight <= GRAPH_BOTTOM)
+    if (lastPrice <= GRAPH_BOTTOM)
     {
-        fluctuation = (rand() % 2);
+        //fluctuation = (rand() % 2);
     }
 
-    marketGraph[lengthOfArray - 1][1] = fluctuation;
+    //marketGraph[lengthOfArray - 1][1] = //fluctuation;
 
     // Cache field for readability and slight performance boost.
-    int currentFluctuation = marketGraph[lengthOfArray - 1][1];
+    //int currentFluctuation = marketGraph[lengthOfArray - 1][1];
 
-    if (lastFluctuation == -1 || lastFluctuation == 0 && currentFluctuation == -1)
-    {
-        marketGraph[lengthOfArray - 1][0] = --lastPriceHeight;
-    }
-    else if (lastFluctuation == 1 && currentFluctuation == 0 || currentFluctuation == 1)
-    {
-        marketGraph[lengthOfArray - 1][0] = lastPriceHeight++;
-    }
-    else
-    {
-        marketGraph[lengthOfArray - 1][0] = lastPriceHeight;
-    }
+    // Instead of storing [x][0] as the last price height store it as the current value
+    // Calculate increase or decrease and output appropriate 
+
+    //if (lastFluctuation == -1 || lastFluctuation == 0 && currentFluctuation == -1)
+    //{
+    //    marketGraph[lengthOfArray - 1][0] = --lastGraphHeight;
+    //}
+    //else if (lastFluctuation == 1 && currentFluctuation == 0 || currentFluctuation == 1)
+    //{
+    //    marketGraph[lengthOfArray - 1][0] = lastGraphHeight++;
+    //}
+    //else
+    //{
+    //    marketGraph[lengthOfArray - 1][0] = lastGraphHeight;
+    //}
 }
 
 void IntialiseGraph()
@@ -277,6 +274,6 @@ void IntialiseGraph()
 
     for (int i = 0; i < sizeof marketGraph / sizeof marketGraph[0]; i++)
     {
-        UpdateGraph();
+        UpdateMarket();
     }
 }
