@@ -22,7 +22,16 @@ std::string lastCommandOutput;
 const int ASSET_MAX_AMOUNT = 1'000'000; // A mil
 
 // 480 bytes
-short marketGraph[120][2];
+short marketGraph[116][2];
+
+struct investor
+{
+    float money;
+    int assetOwned;
+    int knowledge = 0;
+    int gambler = 0;
+    int hopeful = 0;
+};
 
 // List of commands.
 void Buy(unsigned int amountToBuy);
@@ -68,22 +77,20 @@ int main()
     {
         // This could all be written on 1 line but it's not pretty.
         std::string userInput = "";
-        std::cout << "Current price: " << assetPrice;
-        std::cout << "Input command: ";
+        std::cout << "> Current price: " << assetPrice << std::endl << std::endl;
+        std::cout << "- Input command: ";
         userInput = GetValidString();
         InputToCommand(userInput);
 
         UpdateMarket();
 
-         // Clear and draw graph.
+         //Clear and draw graph.
 
-        //system("cls");
-        //DrawGraph();
+        system("cls");
+        DrawGraph();
 
-        std::cout << lastCommandOutput << std::endl;
+        std::cout << lastCommandOutput;
     }
-
-    std::cout << "Money: " << money << " Amount Owned: " << assetOwned << std::endl;
 }
 
 
@@ -104,7 +111,7 @@ void Buy(unsigned int amountToBuy)
 
         // Output feedback and save output for when console clears.
         std::ostringstream buffer;
-        buffer << "Bought " << amountToBuy << " for " << cost << std::endl;
+        buffer << "> Bought " << amountToBuy << " for " << cost << std::endl;
         lastCommandOutput = buffer.str();
     }
 }
@@ -125,7 +132,7 @@ void Sell(int amountToSell)
 
         // Output feedback and save output for when console clears.
         std::ostringstream buffer;
-        buffer << "Sold " << amountToSell << " for " << sellPrice << std::endl;
+        buffer << "> Sold " << amountToSell << " for " << sellPrice << std::endl;
         lastCommandOutput = buffer.str();
     }
 }
@@ -176,11 +183,9 @@ void InputToCommand(std::string userInput)
     {
     case buy:
         Buy(inputAmount);
-        NextDay();
         break;
     case sell:
         Sell(inputAmount);
-        NextDay();
         break;
     case skip:
         NextDay();
@@ -208,8 +213,18 @@ void DrawGraph()
     // Loop for height.
     for (int i = 25; i > 0; i--)
     {
-        // Loop for width.
-        for (int j = 0; j < sizeof marketGraph / sizeof marketGraph[0]; j++)
+        if ((i * 2) % 5 == 0)
+        {
+            // Display graph.
+            std::cout << i * 2 << "-";
+        }
+        else std::cout << "   ";
+
+        // Draw seperater. 
+        std::cout << "|";
+
+        // Loop for graph width.
+        for (int j = 0; j < 116; j++)
         {
             // If there is a value at this position.
             if (i == marketGraph[j][0])
@@ -229,45 +244,36 @@ void DrawGraph()
 void UpdateMarket()
 {
     // Move all fields over by one.
-    int lengthOfArray = sizeof marketGraph / sizeof marketGraph[0];
-    for (int i = 0; i < lengthOfArray - 1; i++) // Loop 1 less than length.
+    for (int i = 0; i < 115; i++) // Loop 1 less than length.
     {
         marketGraph[i][0] = marketGraph[i + 1][0];
         marketGraph[i][1] = marketGraph[i + 1][1];
     }
 
     // Limit price. Limiting from a game POV but text based really limits things.
-    int lowest = (assetPrice <= GRAPH_BOTTOM) ? 0 : -2;
+    int lowest = (assetPrice <= GRAPH_BOTTOM + 2) ? 0 : -2; // +2 to prevent price hitting 0
     int highest = (assetPrice >= GRAPH_TOP) ? 0 : 2;
 
     int range = (highest - lowest) + 1;
-    int fluctuation = (rand() % range) + lowest; // Problematic if lowest is positive.
+    int fluctuation = (rand() % range) + lowest; // Problematic if lowest is >0.
 
-    std::cout << fluctuation << " ";
-
-    assetPrice += fluctuation;
-    std::cout << assetPrice << " ";
+    IncreasePrice(fluctuation);
 
     int graphHeight = assetPrice / 2;
-    marketGraph[119][0] = graphHeight;
+    marketGraph[115][0] = graphHeight;
 
-    std::cout << graphHeight << " ";
 
     int graphChange = graphHeight - lastGraphHeight;
-    marketGraph[119][1] = graphChange;
+    marketGraph[115][1] = graphChange;
 
-    std::cout << graphChange << std::endl;
-
-    // Instead of storing [x][0] as the last price height store it as the current value
-    // Calculate increase or decrease and output appropriate 
-
+    // Check to align graph lines.
     if ((lastGraphChange == -1 || lastGraphChange == 0) && graphChange == 1)
     {
-        marketGraph[lengthOfArray - 1][0] = graphHeight - 1;
+        marketGraph[115][0] = graphHeight - 1;
     }
     else
     {
-        marketGraph[lengthOfArray - 1][0] = graphHeight;
+        marketGraph[115][0] = graphHeight;
     }
 
     lastGraphHeight = graphHeight;
@@ -278,7 +284,7 @@ void IntialiseGraph()
     // Set Seed.
     srand(time(NULL));
 
-    for (int i = 0; i < sizeof marketGraph / sizeof marketGraph[0]; i++)
+    for (int i = 0; i < 116; i++)
     {
         UpdateMarket();
     }
