@@ -1,19 +1,20 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <stdlib.h>
 #include "inputvalidation.h"
 
 // Player statistics.
 double money = 100; // needs negative values for debt
 int assetOwned = 0;
-float assetPrice = 10;
+float assetPrice = 25;
 int day = 1;
 
 // Graph drawing.
-int lastPrice = 12;
-int lastGraphHeight = 12;
-int lastFluctuation = 0;
-const int GRAPH_TOP = 25;
+float lastPrice = 12;
+int lastGraphChange = 0;
+int lastGraphHeight = 0;
+const int GRAPH_TOP = 50;
 const int GRAPH_BOTTOM = 1;
 
 std::string lastCommandOutput;
@@ -58,6 +59,8 @@ void IntialiseGraph();
 
 int main()
 {
+    system("Color 0A");
+
     IntialiseGraph();
     DrawGraph();
 
@@ -78,7 +81,6 @@ int main()
         //DrawGraph();
 
         std::cout << lastCommandOutput << std::endl;
-        std::cout << "Current price: " << assetPrice;
     }
 
     std::cout << "Money: " << money << " Amount Owned: " << assetOwned << std::endl;
@@ -234,37 +236,41 @@ void UpdateMarket()
         marketGraph[i][1] = marketGraph[i + 1][1];
     }
 
-    // Randomise fluctuation and assign to array.
-    int lowest = -25, highest = 25;
+    // Limit price. Limiting from a game POV but text based really limits things.
+    int lowest = (assetPrice <= GRAPH_BOTTOM) ? 0 : -2;
+    int highest = (assetPrice >= GRAPH_TOP) ? 0 : 2;
+
     int range = (highest - lowest) + 1;
-    int random_integer = lowest + int(range * rand() / (RAND_MAX + 1.0));
-    std::cout << random_integer;
+    int fluctuation = (rand() % range) + lowest; // Problematic if lowest is positive.
 
-    if (lastPrice <= GRAPH_BOTTOM)
-    {
-        //fluctuation = (rand() % 2);
-    }
+    std::cout << fluctuation << " ";
 
-    //marketGraph[lengthOfArray - 1][1] = //fluctuation;
+    assetPrice += fluctuation;
+    std::cout << assetPrice << " ";
 
-    // Cache field for readability and slight performance boost.
-    //int currentFluctuation = marketGraph[lengthOfArray - 1][1];
+    int graphHeight = assetPrice / 2;
+    marketGraph[119][0] = graphHeight;
+
+    std::cout << graphHeight << " ";
+
+    int graphChange = graphHeight - lastGraphHeight;
+    marketGraph[119][1] = graphChange;
+
+    std::cout << graphChange << std::endl;
 
     // Instead of storing [x][0] as the last price height store it as the current value
     // Calculate increase or decrease and output appropriate 
 
-    //if (lastFluctuation == -1 || lastFluctuation == 0 && currentFluctuation == -1)
-    //{
-    //    marketGraph[lengthOfArray - 1][0] = --lastGraphHeight;
-    //}
-    //else if (lastFluctuation == 1 && currentFluctuation == 0 || currentFluctuation == 1)
-    //{
-    //    marketGraph[lengthOfArray - 1][0] = lastGraphHeight++;
-    //}
-    //else
-    //{
-    //    marketGraph[lengthOfArray - 1][0] = lastGraphHeight;
-    //}
+    if ((lastGraphChange == -1 || lastGraphChange == 0) && graphChange == 1)
+    {
+        marketGraph[lengthOfArray - 1][0] = graphHeight - 1;
+    }
+    else
+    {
+        marketGraph[lengthOfArray - 1][0] = graphHeight;
+    }
+
+    lastGraphHeight = graphHeight;
 }
 
 void IntialiseGraph()
