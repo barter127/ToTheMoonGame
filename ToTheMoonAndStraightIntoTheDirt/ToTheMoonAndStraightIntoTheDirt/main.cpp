@@ -111,7 +111,7 @@ void Buy(unsigned int amountToBuy)
 
         // Output feedback and save output for when console clears.
         std::ostringstream buffer;
-        buffer << "> Bought " << amountToBuy << " for " << cost << std::endl;
+        buffer << "> Bought " << amountToBuy << " for " << cost << ". You now own " << assetOwned << "." << std::endl;
         lastCommandOutput = buffer.str();
     }
 }
@@ -132,7 +132,7 @@ void Sell(int amountToSell)
 
         // Output feedback and save output for when console clears.
         std::ostringstream buffer;
-        buffer << "> Sold " << amountToSell << " for " << sellPrice << std::endl;
+        buffer << "> Sold " << amountToSell << " for " << sellPrice << ". You now own " << assetOwned << "." << std::endl;
         lastCommandOutput = buffer.str();
     }
 }
@@ -146,8 +146,11 @@ void NextDay()
 
 void InputToCommand(std::string userInput)
 {
-    std::string command = userInput;
+    std::string command = "";
     int inputAmount = 0;
+
+    // Accept any casing.
+    userInput = ToLowerCase(userInput);
 
     // Find space
     std::size_t spacePosition = userInput.find(" ");
