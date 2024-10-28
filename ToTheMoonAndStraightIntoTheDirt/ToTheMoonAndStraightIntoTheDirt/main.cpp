@@ -100,9 +100,9 @@ void Buy(unsigned int amountToBuy)
     float cost = amountToBuy * assetPrice;
 
     // If invalid input print proper error msg.
-    if (money - cost < 0) std::cerr << "Err. Your pockets are empty buddy... not enough money" << std::endl;
-    else if (amountToBuy <= 0) std::cerr << "Err. You have to buy at least 1 doughnut!" << std::endl;
-    else if (assetOwned + amountToBuy > ASSET_MAX_AMOUNT) std::cerr << "Err. You're trying to own more doughnuts than are in circulation! The market can't supply that many!" << std::endl;
+    if (money - cost < 0) std::cerr << "[!] Err. Your pockets are empty buddy... not enough money" << std::endl;
+    else if (amountToBuy <= 0) std::cerr << "[!] Err. You have to buy at least 1 doughnut!" << std::endl;
+    else if (assetOwned + amountToBuy > ASSET_MAX_AMOUNT) std::cerr << "[!] Err. You're trying to own more doughnuts than are in circulation! The market can't supply that many!" << std::endl;
 
     else // If Valid input (has enough money, is buying at least 1, and not attempting to buy more than avalible)
     {
@@ -121,8 +121,8 @@ void Sell(int amountToSell)
     float sellPrice = 0;
 
     // If invalid print proper error msg.
-    if ((assetOwned - amountToSell) < 0) std::cerr << "Err. You're trying to sell more than you own!" << std::endl;
-    else if (amountToSell < 0) std::cerr << "Err. You have to sell at least 1 doughnut" << std::endl;
+    if ((assetOwned - amountToSell) < 0) std::cerr << "[!] Err. You're trying to sell more than you own!" << std::endl;
+    else if (amountToSell < 0) std::cerr << "[!] Err.You have to sell at least 1 doughnut" << std::endl;
 
     else // If Valid input (selling an amount they own and selling at least 1)
     {
@@ -171,12 +171,12 @@ void InputToCommand(std::string userInput)
         }
         else if (!IsNumber(amountString))
         {
-            std::cerr << "Err. Number contains char" << std::endl;
+            std::cerr << "[!] Err. Number contains char" << std::endl;
             return;
         }
         else
         {
-            std::cerr << "Err. Nothing Input" << std::endl;
+            std::cerr << "[!] Err. Nothing Input" << std::endl;
             return;
         }
     }
@@ -194,7 +194,7 @@ void InputToCommand(std::string userInput)
         NextDay();
         break;
     case error:
-        std::cerr << "Err. Invalid Command" << std::endl;
+        std::cerr << "[!] Err. Invalid Command" << std::endl;
         break;
     }
 }
