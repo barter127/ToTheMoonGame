@@ -39,3 +39,24 @@ std::string GetValidString()
     }
     return userInput;
 }
+
+// Prolly only used to find spaces but modularity!
+int NthOccurence(std::string strToCheck, std::string lookingFor, int n)
+{
+    size_t pos = 0;
+    int iter = 0;
+
+    while (iter != n)
+    {
+        pos++;
+        pos = strToCheck.find(lookingFor, pos);
+
+        //  nth not found return failcode.
+        if (pos == std::string::npos)
+            return -1;
+
+        iter++;
+    }
+
+    return pos;
+}
