@@ -5,7 +5,7 @@
 #include "inputvalidation.h"
 
 // Player statistics.
-double money = 100; // needs negative values for debt
+double money = 1000; // needs negative values for debt
 int assetOwned = 0;
 float assetPrice = 25;
 int day = 1;
@@ -54,20 +54,23 @@ ListOfCommands HashCommands(std::string const& inString)
     else return error;
 }
 
-void InputToCommand(std::string userInput);
+// Read command inputs
+void GetPlayerCommand();
+bool InputToCommand(std::string userInput);
 
 // Handle Price.
-inline void IncreasePrice(int increase);
-inline void DecreasePrice(int decrease);
+inline void ChangeAssetPrice(int increase);
 
 // Handle graph.
 void DrawGraph();
 void UpdateMarket();
+void DrawMarketTrend(int fluctuation);
 // Used only once.
 void IntialiseGraph();
 
 int main()
 {
+    // Set console colour. BG: Black Text: Green
     system("Color 0A");
 
     IntialiseGraph();
@@ -76,11 +79,9 @@ int main()
     while (true)
     {
         // This could all be written on 1 line but it's not pretty.
-        std::string userInput = "";
         std::cout << "> Current price: " << assetPrice << std::endl << std::endl;
-        std::cout << "- Input command: ";
-        userInput = GetValidString();
-        InputToCommand(userInput);
+
+        GetPlayerCommand();
 
         UpdateMarket();
 
@@ -144,7 +145,19 @@ void NextDay()
     lastCommandOutput = buffer.str();
 }
 
-void InputToCommand(std::string userInput)
+void GetPlayerCommand()
+{
+    std::string userInput = "";
+
+    do
+    {
+        std::cout << "- Input command: ";
+        userInput = GetValidString();
+    } while (!InputToCommand(userInput));
+}
+
+// SPLIT UP FAGGOT
+bool InputToCommand(std::string userInput)
 {
     std::string command = "";
     int inputAmount = 0;
@@ -172,12 +185,12 @@ void InputToCommand(std::string userInput)
         else if (!IsNumber(amountString))
         {
             std::cerr << "[!] Err. Number contains char" << std::endl;
-            return;
+            return false;
         }
         else
         {
             std::cerr << "[!] Err. Nothing Input" << std::endl;
-            return;
+            return false;
         }
     }
 
@@ -186,56 +199,51 @@ void InputToCommand(std::string userInput)
     {
     case buy:
         Buy(inputAmount);
-        break;
+        return true;
     case sell:
         Sell(inputAmount);
-        break;
+        return true;
     case skip:
         NextDay();
-        break;
+        return true;
     case error:
         std::cerr << "[!] Err. Invalid Command" << std::endl;
-        break;
     }
+
+    // If fails.
+    return false;
 }
 
 // Price.
-inline void IncreasePrice(int increase)
+inline void ChangeAssetPrice(int increase)
 {
     assetPrice += increase;
-}
-
-inline void DecreasePrice(int decrease)
-{
-    assetPrice += decrease;
 }
 
 // Graph.
 void DrawGraph()
 {
     // Loop for height.
-    for (int i = 25; i > 0; i--)
+    for (int gHeight = 25; gHeight > 0; gHeight--)
     {
-        if ((i * 2) % 5 == 0)
+        if ((gHeight * 2) % 5 == 0)
         {
-            // Display graph.
-            std::cout << i * 2 << "-";
+            // Display graph numbers.
+            std::cout << gHeight * 2 << "-";
         }
         else std::cout << "   ";
 
-        // Draw seperater. 
+        // Draw seperator. 
         std::cout << "|";
 
         // Loop for graph width.
-        for (int j = 0; j < 116; j++)
+        for (int gWidth = 0; gWidth < 116; gWidth++)
         {
             // If there is a value at this position.
-            if (i == marketGraph[j][0])
+            if (gHeight == marketGraph[gWidth][0])
             {
                 // Draw corresponding output.
-                if (marketGraph[j][1] == 1) std::cout << "/";
-                else if (marketGraph[j][1] == 0) std::cout << "_";
-                else std::cout << "\\";
+                DrawMarketTrend(marketGraph[gWidth][1]);
             }
             else std::cout << " ";
         }
@@ -260,7 +268,7 @@ void UpdateMarket()
     int range = (highest - lowest) + 1;
     int fluctuation = (rand() % range) + lowest; // Problematic if lowest is >0.
 
-    IncreasePrice(fluctuation);
+    ChangeAssetPrice(fluctuation);
 
     int graphHeight = assetPrice / 2;
     marketGraph[115][0] = graphHeight;
@@ -291,4 +299,12 @@ void IntialiseGraph()
     {
         UpdateMarket();
     }
+}
+
+void DrawMarketTrend(int fluctuation)
+{
+    if (fluctuation == 1) std::cout << "/";
+    else if (fluctuation == 0) std::cout << "_";
+    else if (fluctuation == -1) std::cout << "\\";
+    // No else as plans for larger increase and decrease in a day.
 }
