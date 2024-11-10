@@ -4,6 +4,7 @@
 #include <map>
 #include <functional>
 #include "inputvalidation.h"
+#include "start+end.h"
 
 // Player statistics.
 double money = 1000; // Needs negative values for possib;e debt mechanic.
@@ -72,6 +73,8 @@ int main()
     // Set console colour. BG: Black Text: Green
     system("Color 0A");
 
+    PrintTitle();
+
     IntialiseGraph();
     DrawGraph();
 
@@ -137,7 +140,7 @@ void GetCommand()
     // Accept any casing.
     commandWord = ToLowerCase(commandWord);
 
-    commands[commandWord];
+    commands[commandWord]();
 }
 
 // Reads the command word.
