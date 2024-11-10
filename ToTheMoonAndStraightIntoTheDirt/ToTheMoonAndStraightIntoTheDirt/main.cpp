@@ -15,7 +15,7 @@ int day = 1;
 // Graph drawing.
 float lastPrice = 12;
 int lastGraphChange = 0;
-int lastGraphHeight = 0;
+int lastGraphHeight = 12;
 const int GRAPH_TOP = 50;
 const int GRAPH_BOTTOM = 1;
 
@@ -48,6 +48,7 @@ auto GetParameter(std::string commandLine, typename varType, int parmIndex);
 void Buy();
 void Sell();
 void NextDay();
+void Help();
 void Exit();
 
 std::map<std::string, std::function<void()>> commands
@@ -55,6 +56,7 @@ std::map<std::string, std::function<void()>> commands
     {"buy", Buy},
     {"sell", Sell},
     {"skip", NextDay},
+    {"help", Help},
     {"exit", Exit}
 };
 
@@ -63,6 +65,7 @@ inline void ChangeAssetPrice(int increase);
 
 // Handle graph.
 void DrawGraph();
+void DrawYAxisLabel(int graphHeight);
 void UpdateMarket();
 void DrawMarketTrend(int fluctuation);
 // Used only once.
@@ -73,11 +76,12 @@ int main()
     // Set console colour. BG: Black Text: Green
     system("Color 0A");
 
-    PrintTitle();
+    //PLEASE PLEASE PLEASE PLEASE PLEASE PLEASE PLEASE PLEASE DON'T FORGET TO UNCOMMENT THIS
+    //PrintTitle();
 
     IntialiseGraph();
     DrawGraph();
-
+        
     while (true)
     {
         // This could all be written on 1 line but it's not pretty.
@@ -98,6 +102,10 @@ int main()
 
         std::cout << lastCommandOutput;
     }
+
+    std::cout << std::endl;
+
+    PrintEndGameMessage();
 }
 
 // Read command inputs.
@@ -140,7 +148,11 @@ void GetCommand()
     // Accept any casing.
     commandWord = ToLowerCase(commandWord);
 
-    commands[commandWord]();
+    if (commands.find(commandWord) != commands.end())
+        commands[commandWord]();
+
+    else
+        std::cerr << "[!] Err.Invalid Command \n";
 }
 
 // Reads the command word.
@@ -240,15 +252,19 @@ void NextDay()
     lastCommandOutput = buffer.str();
 }
 
+void Help()
+{
+    std::cout << ">> buy <amount>: Buys amount of doughnuts" << std::endl
+        << ">> sell <amount>: Sells amount of doughnuts" << std::endl
+        << ">> skip: Skips day" << std::endl
+        << ">> help: Dude you just used it you know what it does" << std::endl
+        << ">> exit: exits game" << std::endl << std::endl;
+}
+
 // Exits game.
 void Exit()
 {
     endGame = true;
-}
-
-void NoInput()
-{
-    std::cerr << "Please input a valid command. Use skip if you want to skip.";
 }
 
 // Price.
@@ -261,17 +277,10 @@ inline void ChangeAssetPrice(int increase)
 void DrawGraph()
 {
     // Loop for height.
-    for (int gHeight = 25; gHeight > 0; gHeight--)
+    for (int gHeight = 25; gHeight > 0 ; gHeight--)
     {
-        if ((gHeight * 2) % 5 == 0)
-        {
-            // Display graph numbers.
-            std::cout << gHeight * 2 << "-";
-        }
-        else std::cout << "   ";
-
-        // Draw seperator. 
-        std::cout << "|";
+        // Draw left side of graph.
+        DrawYAxisLabel(gHeight);
 
         // Loop for graph width.
         for (int gWidth = 0; gWidth < 116; gWidth++)
@@ -287,6 +296,28 @@ void DrawGraph()
 
         std::cout << "\n";
     }
+}
+
+void DrawYAxisLabel(int graphHeight)
+{
+    // Draw
+    if ((graphHeight * 2) % 5 == 0)
+    {
+        // Display graph numbers.
+        std::cout << graphHeight * 2 << "-";
+    }
+    else std::cout << "   ";
+
+    // Draw seperator. 
+    std::cout << "|";
+}
+
+void DrawMarketTrend(int fluctuation)
+{
+    if (fluctuation == 1) std::cout << "/";
+    else if (fluctuation == 0) std::cout << "_";
+    else if (fluctuation == -1) std::cout << "\\";
+    // No else as plans for larger increase and decrease in a day.
 }
 
 void UpdateMarket()
@@ -336,12 +367,4 @@ void IntialiseGraph()
     {
         UpdateMarket();
     }
-}
-
-void DrawMarketTrend(int fluctuation)
-{
-    if (fluctuation == 1) std::cout << "/";
-    else if (fluctuation == 0) std::cout << "_";
-    else if (fluctuation == -1) std::cout << "\\";
-    // No else as plans for larger increase and decrease in a day.
 }

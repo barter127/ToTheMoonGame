@@ -47,10 +47,10 @@ void PrintTheDirt()
 	std::cout << "$$$$$$$$\\ $$\\                       $$$$$$$\\  $$\\           $$\\" << std::endl
 			  << "\\__$$  __|$$ |                      $$  __$$\\ \\__|           $$ |" << std::endl
 			  << "   $$ |   $$$$$$$\\   $$$$$$\\        $$ |  $$ |$$\\  $$$$$$\\ $$$$$$\\" << std::endl
-			  << "   $$ |   $$  __$$\\ $$  __$$\        $$ |  $$ |$$ |$$  __$$\\\\_$$  _|" << std::endl
+			  << "   $$ |   $$  __$$\\ $$  __$$\\        $$ |  $$ |$$ |$$  __$$\\\\_$$  _|" << std::endl
 			  << "   $$ |   $$ |  $$ |$$$$$$$$ |      $$ |  $$ |$$ |$$ |  \\__| $$ |" << std::endl
 			  << "   $$ |   $$ |  $$ |$$   ____|      $$ |  $$ |$$ |$$ |       $$ |$$\\" << std::endl
-			  << "   $$ |   $$ |  $$ |\\$$$$$$$\        $$$$$$$  |$$ |$$ |       \\$$$$  |" <<std::endl
+			  << "   $$ |   $$ |  $$ |\\$$$$$$$\\        $$$$$$$  |$$ |$$ |       \\$$$$  |" <<std::endl
 			  << "   \\__|   \\__|  \\__| \\_______|      \\_______/ \\__|\\__|        \\____/" << std::endl << std::endl;
 }
 
@@ -147,4 +147,43 @@ void PrintEndStats()
 	std::cout << "Total profit: " << totalProfit << std::endl
 		<< "Highest Profit in one transaction: " << highestProfitOneDay << std::endl
 		<< "Total assets sold: " << assetsSold << std::endl;
+}
+
+enum endGameMessage {
+	ThatsAll,
+	Bane,
+	EntrepeneurCEO,
+	SpaceCowboy,
+	NextTime,
+	VideoTape,
+	EndMessagelength
+};
+
+void PrintEndGameMessage()
+{
+	int randInt = rand() % EndMessagelength;
+
+	switch (randInt)
+	{
+	case(ThatsAll):
+		std::cout << "That's all Folks!";
+		break;
+	case(Bane):
+		std::cout << "Is that fucking bane?! Holy shit run!!!";
+		break;
+	case(EntrepeneurCEO):
+		std::cout << "Goodbye \"Entrepeneur CEO\"";
+		break;
+	case(SpaceCowboy):
+		std::cout << "SEE YOU SPACE COWBOY...";
+		break;
+	case(NextTime):
+		std::cout << "See ya next time.";
+		break;
+	case(VideoTape):
+		std::cout << "I've gotta return some videotapes";
+		break;
+	}
+
+	std::cout << std::endl << std::endl;
 }
