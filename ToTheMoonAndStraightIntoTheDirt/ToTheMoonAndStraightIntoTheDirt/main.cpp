@@ -97,8 +97,8 @@ int main()
         UpdateMarket();
 
          //Clear and draw graph.
-        //system("cls");
-        //DrawGraph();
+        system("cls");
+        DrawGraph();
 
         std::cout << lastCommandOutput;
     }
@@ -142,17 +142,27 @@ std::string ConvertType(std::string type, std::string input)
 
 void GetCommand()
 {
-    getline(std::cin, commandInput);
-    std::string commandWord = GetCommandWord(commandInput);
+    bool validCommand = false;
 
-    // Accept any casing.
-    commandWord = ToLowerCase(commandWord);
+    while (!validCommand)
+    {
+        getline(std::cin, commandInput);
+        std::string commandWord = GetCommandWord(commandInput);
 
-    if (commands.find(commandWord) != commands.end())
-        commands[commandWord]();
+        // Accept any casing.
+        commandWord = ToLowerCase(commandWord);
 
-    else
-        std::cerr << "[!] Err.Invalid Command \n";
+        if (commands.find(commandWord) != commands.end())
+        {
+            commands[commandWord]();
+            validCommand = true;
+        }
+
+        else
+            std::cerr << "[!] Err.Invalid Command" << std::endl;
+
+        std::cin.clear();
+    }
 }
 
 // Reads the command word.
