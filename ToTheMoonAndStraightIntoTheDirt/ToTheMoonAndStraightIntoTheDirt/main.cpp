@@ -1,10 +1,14 @@
+#include <chrono>
 #include <iostream>
+#include <thread>
 #include <string>
 #include <sstream>
 #include <map>
 #include <functional>
 #include "inputvalidation.h"
 #include "start+end.h"
+
+using namespace std::chrono_literals;
 
 // Player statistics.
 double money = 1000; // Needs negative values for possib;e debt mechanic.
@@ -37,6 +41,8 @@ struct investor
     int gambler = 0;
     int hopeful = 0;
 };
+
+bool marketTrendingUp;
 
 // Command input.
 void GetCommand();
@@ -71,23 +77,55 @@ void DrawMarketTrend(int fluctuation);
 // Used only once.
 void IntialiseGraph();
 
+bool timer = true;
+
+// Timer code by The Cherno. Pretyy sure 90% of this isn't nessecary.
+void Timer()
+{
+    auto startTime = std::chrono::steady_clock::now();
+
+    while (true)
+    {
+        auto now = std::chrono::steady_clock::now();
+        if (std::chrono::duration_cast<std::chrono::seconds>(now - startTime) >= 3s)
+        {
+            // Timer complete!
+            std::cout << "Timer complete";
+
+            UpdateMarket();
+            system("cls");
+            DrawGraph();
+
+            std::cout << "> Current price: " << assetPrice << std::endl << std::endl;
+
+            startTime = std::chrono::steady_clock::now();
+        }
+
+        std::this_thread::sleep_for(5ms);
+    }
+}
+
 int main()
 {
     // Set console colour. BG: Black Text: Green
     system("Color 0A");
 
     //PLEASE PLEASE PLEASE PLEASE PLEASE PLEASE PLEASE PLEASE DON'T FORGET TO UNCOMMENT THIS
-    //PrintTitle();
+    DisplayTitle();
 
     IntialiseGraph();
     DrawGraph();
-        
+   
+    std::thread Countdown(Timer);
+
     while (true)
     {
-        // This could all be written on 1 line but it's not pretty.
         std::cout << "> Current price: " << assetPrice << std::endl << std::endl;
+        //std::thread Input(GetCommand);
 
         GetCommand();
+
+        //Input.join();
 
         if (endGame)
         {
@@ -326,8 +364,9 @@ void DrawMarketTrend(int fluctuation)
 {
     if (fluctuation == 1) std::cout << "/";
     else if (fluctuation == 0) std::cout << "_";
-    else if (fluctuation == -1) std::cout << "\\";
-    // No else as plans for larger increase and decrease in a day.
+    else std::cout << "\\";
+    // Plan to use moe vertical price changes fell short
+    // the lines become slightly unaligned and makes it look weird.
 }
 
 void UpdateMarket()
@@ -345,6 +384,9 @@ void UpdateMarket()
 
     int range = (highest - lowest) + 1;
     int fluctuation = (rand() % range) + lowest; // Problematic if lowest is >0.
+
+    //Ripped from stack overflow.
+    //float fluctuation = lowest + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (highest - lowest)))
 
     ChangeAssetPrice(fluctuation);
 
@@ -377,4 +419,9 @@ void IntialiseGraph()
     {
         UpdateMarket();
     }
+}
+
+void InvestorDecision()
+{
+
 }

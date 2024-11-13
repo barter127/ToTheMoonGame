@@ -38,7 +38,7 @@ void PrintStraightInto()
 			  << " \\______/    \\____/ \\__|      \\_______|\\__| \\____$$ |\\__|  \\__|  \\____/       \\______|\\__|  \\__|  \\____/  \\______/" << std::endl
 			  << "					   $$\\   $$ |" << std::endl
 			  << "					   \\$$$$$$  |" << std::endl
-			  << "					   \\______/" << std::endl;
+			  << "					   \\______/" << std::endl << std::endl;
 		
 }
 
@@ -47,14 +47,14 @@ void PrintTheDirt()
 	std::cout << "$$$$$$$$\\ $$\\                       $$$$$$$\\  $$\\           $$\\" << std::endl
 			  << "\\__$$  __|$$ |                      $$  __$$\\ \\__|           $$ |" << std::endl
 			  << "   $$ |   $$$$$$$\\   $$$$$$\\        $$ |  $$ |$$\\  $$$$$$\\ $$$$$$\\" << std::endl
-			  << "   $$ |   $$  __$$\\ $$  __$$\\        $$ |  $$ |$$ |$$  __$$\\\\_$$  _|" << std::endl
+			  << "   $$ |   $$  __$$\\ $$  __$$\\       $$ |  $$ |$$ |$$  __$$\\\\_$$  _|" << std::endl
 			  << "   $$ |   $$ |  $$ |$$$$$$$$ |      $$ |  $$ |$$ |$$ |  \\__| $$ |" << std::endl
 			  << "   $$ |   $$ |  $$ |$$   ____|      $$ |  $$ |$$ |$$ |       $$ |$$\\" << std::endl
-			  << "   $$ |   $$ |  $$ |\\$$$$$$$\\        $$$$$$$  |$$ |$$ |       \\$$$$  |" <<std::endl
+			  << "   $$ |   $$ |  $$ |\\$$$$$$$\\        $$$$$$$ |$$ |$$ |       \\$$$$  |" <<std::endl
 			  << "   \\__|   \\__|  \\__| \\_______|      \\_______/ \\__|\\__|        \\____/" << std::endl << std::endl;
 }
 
-void PrintTitle()
+void DisplayTitle()
 {
 	PrintToTheMoon();
 	Beep(3500, 300);
@@ -156,6 +156,7 @@ enum endGameMessage {
 	SpaceCowboy,
 	NextTime,
 	VideoTape,
+	PaydayToo,
 	EndMessagelength
 };
 
@@ -182,6 +183,9 @@ void PrintEndGameMessage()
 		break;
 	case(VideoTape):
 		std::cout << "I've gotta return some videotapes";
+		break;
+	case(PaydayToo):
+		std::cout << "You see, I need my payday too.";
 		break;
 	}
 
