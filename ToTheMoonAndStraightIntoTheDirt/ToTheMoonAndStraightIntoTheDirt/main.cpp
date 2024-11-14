@@ -13,7 +13,7 @@ using namespace std::chrono_literals;
 // Player statistics.
 double money = 1000; // Needs negative values for possib;e debt mechanic.
 int assetOwned = 0;
-float assetPrice = 25;
+float assetPrice = 25.0;
 int day = 1;
 
 // Graph drawing.
@@ -22,7 +22,7 @@ int lastGraphChange = 0;
 int lastGraphHeight = 12;
 const int GRAPH_TOP = 50;
 const int GRAPH_BOTTOM = 1;
-const int Money_Multiplier = 2;
+const float Money_Multiplier = 2.0;
 
 std::string lastCommandOutput;
 
@@ -64,7 +64,6 @@ std::map<std::string, std::function<void()>> commands
     {"b", Buy},
     {"sell", Sell},
     {"s", Sell},
-    {"skip", NextDay},
     {"help", Help},
     {"exit", Exit}
 };
@@ -77,6 +76,7 @@ void DrawGraph();
 void EraseGraph();
 void DrawYAxisLabel(int graphHeight);
 void UpdateMarket();
+float RandomRange(int lowest, int highest);
 void DrawMarketTrend(int fluctuation);
 // Used only once.
 void IntialiseGraph();
@@ -90,8 +90,8 @@ void Timer()
     {
         std::this_thread::sleep_for(3s);
 
-        UpdateMarket();
         system("cls");
+        UpdateMarket();
         DrawGraph();
 
         std::cout << "> Current price: " << assetPrice << std::endl << std::endl;
@@ -278,9 +278,12 @@ void Sell()
 
 void NextDay()
 {
-    std::ostringstream buffer;
-    buffer << "Day Skipped";
-    lastCommandOutput = buffer.str();
+    system("cls");
+    UpdateMarket();
+    DrawGraph();
+
+    std::cout << "> Current price: " << assetPrice << std::endl << std::endl;
+    std::cout << lastCommandOutput;
 }
 
 void Help()
@@ -378,18 +381,24 @@ void UpdateMarket()
     }
 
     // Limit price. Limiting from a game POV but text based really limits things.
-    int lowest = (assetPrice <= GRAPH_BOTTOM + 2) ? 0 : -2; // +2 to prevent price hitting 0
+    int lowest = (assetPrice <= GRAPH_BOTTOM + 2) ? 0 : -2;
     int highest = (assetPrice >= GRAPH_TOP) ? 0 : 2;
 
-    int range = (highest - lowest) + 1;
-    int fluctuation = (rand() % range) + lowest; // Problematic if lowest is >0.
+    float fluctuation = RandomRange(lowest, highest);
 
-    //Ripped from stack overflow.
-    //float fluctuation = lowest + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (highest - lowest)))
+    // If decimal and int fluctuation are randomised using the same float it makes the overall graph line too centred
+    //The addition of decimals is important for immersion and player fantasy of actually being a broker.
+    
+    lowest = (fluctuation <= -2) ? 0 : -100;
+    highest = (fluctuation >= 2) ? 0 : 100;
 
-    ChangeAssetPrice(fluctuation);
+    float decimal = RandomRange(lowest, highest);
 
-    int graphHeight = assetPrice / Money_Multiplier;
+    fluctuation += (decimal / 100);
+
+    assetPrice += fluctuation;
+
+    int graphHeight = round(assetPrice / Money_Multiplier);
     marketGraph[115][0] = graphHeight;
 
 
@@ -423,4 +432,10 @@ void IntialiseGraph()
 void InvestorDecision()
 {
 
+}
+
+float RandomRange(int lowest, int highest)
+{
+    int range = (highest - lowest) + 1;
+    return (rand() % range) + lowest; // Problematic if lowest is >0.
 }
