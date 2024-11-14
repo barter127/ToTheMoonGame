@@ -22,6 +22,7 @@ int lastGraphChange = 0;
 int lastGraphHeight = 12;
 const int GRAPH_TOP = 50;
 const int GRAPH_BOTTOM = 1;
+const int Money_Multiplier = 2;
 
 std::string lastCommandOutput;
 
@@ -60,7 +61,9 @@ void Exit();
 std::map<std::string, std::function<void()>> commands
 {
     {"buy", Buy},
+    {"b", Buy},
     {"sell", Sell},
+    {"s", Sell},
     {"skip", NextDay},
     {"help", Help},
     {"exit", Exit}
@@ -71,6 +74,7 @@ inline void ChangeAssetPrice(int increase);
 
 // Handle graph.
 void DrawGraph();
+void EraseGraph();
 void DrawYAxisLabel(int graphHeight);
 void UpdateMarket();
 void DrawMarketTrend(int fluctuation);
@@ -82,26 +86,16 @@ bool timer = true;
 // Timer code by The Cherno. Pretyy sure 90% of this isn't nessecary.
 void Timer()
 {
-    auto startTime = std::chrono::steady_clock::now();
-
     while (true)
     {
-        auto now = std::chrono::steady_clock::now();
-        if (std::chrono::duration_cast<std::chrono::seconds>(now - startTime) >= 3s)
-        {
-            // Timer complete!
-            std::cout << "Timer complete";
+        std::this_thread::sleep_for(3s);
 
-            UpdateMarket();
-            system("cls");
-            DrawGraph();
+        UpdateMarket();
+        system("cls");
+        DrawGraph();
 
-            std::cout << "> Current price: " << assetPrice << std::endl << std::endl;
-
-            startTime = std::chrono::steady_clock::now();
-        }
-
-        std::this_thread::sleep_for(5ms);
+        std::cout << "> Current price: " << assetPrice << std::endl << std::endl;
+        std::cout << lastCommandOutput;
     }
 }
 
@@ -111,34 +105,23 @@ int main()
     system("Color 0A");
 
     //PLEASE PLEASE PLEASE PLEASE PLEASE PLEASE PLEASE PLEASE DON'T FORGET TO UNCOMMENT THIS
-    DisplayTitle();
+    //DisplayTitle();
 
     IntialiseGraph();
     DrawGraph();
+    std::cout << "> Current price: " << assetPrice << std::endl << std::endl;
    
     std::thread Countdown(Timer);
 
     while (true)
     {
-        std::cout << "> Current price: " << assetPrice << std::endl << std::endl;
-        //std::thread Input(GetCommand);
-
         GetCommand();
 
-        //Input.join();
 
         if (endGame)
         {
             break;
         }
-
-        UpdateMarket();
-
-         //Clear and draw graph.
-        system("cls");
-        DrawGraph();
-
-        std::cout << lastCommandOutput;
     }
 
     std::cout << std::endl;
@@ -324,6 +307,8 @@ inline void ChangeAssetPrice(int increase)
 // Graph.
 void DrawGraph()
 {
+    printf("\033[%d;%dH", 1, 1);
+
     // Loop for height.
     for (int gHeight = 25; gHeight > 0 ; gHeight--)
     {
@@ -343,6 +328,20 @@ void DrawGraph()
         }
 
         std::cout << "\n";
+    }
+}
+
+void EraseGraph()
+{
+    printf("\033[%d;%dH", 1, 1);
+
+    // +1 for current price line
+    int graphHeight = (GRAPH_TOP / Money_Multiplier) + 1;
+
+    for (int i = 0; i < graphHeight; i++)
+    {
+        printf("\x1b[2K");
+        std::cout << std::endl;
     }
 }
 
@@ -390,7 +389,7 @@ void UpdateMarket()
 
     ChangeAssetPrice(fluctuation);
 
-    int graphHeight = assetPrice / 2;
+    int graphHeight = assetPrice / Money_Multiplier;
     marketGraph[115][0] = graphHeight;
 
 
