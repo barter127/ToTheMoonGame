@@ -1,5 +1,6 @@
 #include "Investor.h"
-#include "Market.h"
+
+extern float assetPrice;
 
 void Investor::Buy()
 {
@@ -13,7 +14,7 @@ void Investor::Sell()
 {
 	float profit = (assetOwned / actionInDays) * 25;
 
-	money += profit;
+	investorMoney += profit;
 	totalProfit += profit;
 	assetOwned -= assetOwned / actionInDays;
 

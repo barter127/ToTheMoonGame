@@ -10,16 +10,10 @@
 #include "start+end.h"
 #include "Investor.h"
 #include "Market.h"
+#include "Graph.h"
+
 
 using namespace std::chrono_literals;
-
-// Graph drawing.
-float lastPrice = 12;
-int lastGraphChange = 0;
-int lastGraphHeight = 12;
-const int GRAPH_TOP = 50;
-const int GRAPH_BOTTOM = 1;
-const int Money_Multiplier = 2;
 
 std::string lastCommandOutput;
 
@@ -94,18 +88,18 @@ int main()
 
     IntialiseGraph();
     DrawGraph();
-    std::cout << "> Current price: " << assetPrice << std::endl;
-    std::cout << "> Money: " << money << std::endl << std::endl;
+    std::cout << "> Current price: " << assetPrice << "\n";
+    std::cout << "> Money: " << money << "\n" << "\n";
    
     std::thread Countdown(Timer);
 
     while (!endGame)
     {
         GetCommand();
-        std::cout << lastCommandOutput << std::endl;
+        std::cout << lastCommandOutput << "\n";
     }
 
-    std::cout << std::endl;
+    std::cout << "\n";
     PrintEndGameMessage();
 }
 
@@ -160,7 +154,7 @@ void GetCommand()
         }
 
         else
-            std::cerr << "[!] Err.Invalid Command" << std::endl;
+            std::cerr << "[!] Err.Invalid Command" << "\n";
 
         std::cin.clear();
     }
@@ -214,9 +208,9 @@ void Buy()
     float cost = amountToBuy * assetPrice;
 
     // If invalid input print proper error msg.
-    if (money - cost < 0) std::cerr << "[!] Err. Your pockets are empty buddy... not enough money" << std::endl;
-    else if (amountToBuy <= 0) std::cerr << "[!] Err. You have to buy at least 1 doughnut!" << std::endl;
-    else if (assetOwned + amountToBuy > ASSET_MAX_AMOUNT) std::cerr << "[!] Err. You're trying to own more doughnuts than are in circulation! The market can't supply that many!" << std::endl;
+    if (money - cost < 0) std::cerr << "[!] Err. Your pockets are empty buddy... not enough money" << "\n";
+    else if (amountToBuy <= 0) std::cerr << "[!] Err. You have to buy at least 1 doughnut!" << "\n";
+    else if (assetOwned + amountToBuy > ASSET_MAX_AMOUNT) std::cerr << "[!] Err. You're trying to own more doughnuts than are in circulation! The market can't supply that many!" << "\n";
 
     else // If Valid input (has enough money, is buying at least 1, and not attempting to buy more than avalible)
     {
@@ -225,12 +219,12 @@ void Buy()
 
         // Output feedback and save output for when console clears.
         std::ostringstream buffer;
-        buffer << "> Bought " << amountToBuy << " for " << cost << ". You now own " << assetOwned << "." << std::endl;
+        buffer << "> Bought " << amountToBuy << " for " << cost << ". You now own " << assetOwned << "." << "\n";
         lastCommandOutput = buffer.str();
     }
 
     std::ostringstream buffer;
-    buffer << "> Bought " << amountToBuy << " for " << cost << ". You now own " << assetOwned << "." << std::endl;
+    buffer << "> Bought " << amountToBuy << " for " << cost << ". You now own " << assetOwned << "." << "\n";
 }
 
 void Sell()
@@ -240,8 +234,8 @@ void Sell()
     float sellPrice = 0;
 
     // If invalid print proper error msg.
-    if ((assetOwned - amountToSell) < 0) std::cerr << "[!] Err. You're trying to sell more than you own!" << std::endl;
-    else if (amountToSell < 0) std::cerr << "[!] Err.You have to sell at least 1 doughnut" << std::endl;
+    if ((assetOwned - amountToSell) < 0) std::cerr << "[!] Err. You're trying to sell more than you own!" << "\n";
+    else if (amountToSell < 0) std::cerr << "[!] Err.You have to sell at least 1 doughnut" << "\n";
 
     else // If Valid input (selling an amount they own and selling at least 1)
     {
@@ -251,7 +245,7 @@ void Sell()
 
         // Output feedback and save output for when console clears.
         std::ostringstream buffer;
-        buffer << "> Sold " << amountToSell << " for " << sellPrice << ". You now own " << assetOwned << "." << std::endl;
+        buffer << "> Sold " << amountToSell << " for " << sellPrice << ". You now own " << assetOwned << "." << "\n";
         lastCommandOutput = buffer.str();
     }
 }
@@ -262,35 +256,35 @@ void NextDay()
     UpdateMarket();
     DrawGraph();
 
-    std::cout << "> Current price: " << assetPrice << std::endl;
-    std::cout << "> Money: " << money << std::endl;
-    std::cout << lastCommandOutput << std::endl;
+    std::cout << "> Current price: " << assetPrice << "\n";
+    std::cout << "> Money: " << money << "\n";
+    std::cout << lastCommandOutput << "\n";
 }
 
 void Help()
 {
     std::ostringstream buffer;
-    buffer << "Command List:" << std::endl
-        << "    >> buy <amount>: Buys amount of doughnuts" << std::endl
-        << "    >> sell <amount>: Sells amount of doughnuts" << std::endl
-        << "    >> help: Dude you just used it you know what it does" << std::endl
-        << "    >> dong: Prints the amount of money you have in Vietnamese Dong" << std::endl
-        << "    >> share: Prints your share percentage" << std::endl
-        << "    >> exit: exits game" << std::endl;
+    buffer << "Command List:" << "\n"
+        << "    >> buy <amount>: Buys amount of doughnuts" << "\n"
+        << "    >> sell <amount>: Sells amount of doughnuts" << "\n"
+        << "    >> help: Dude you just used it you know what it does" << "\n"
+        << "    >> dong: Prints the amount of money you have in Vietnamese Dong" << "\n"
+        << "    >> share: Prints your share percentage" << "\n"
+        << "    >> exit: exits game" << "\n";
     lastCommandOutput = buffer.str();
 }
 
 void Dong()
 {
     std::ostringstream buffer;
-    buffer << "> You have " << money * 32174.30 << " Dong" << std::endl;
+    buffer << "> You have " << money * 32174.30 << " Dong" << "\n";
     lastCommandOutput = buffer.str();
 }
 
 void Share()
 {
     std::ostringstream buffer;
-    buffer << "> You have " << ((float)assetOwned / (float)ASSET_MAX_AMOUNT) * 100 << "% of the market" << std::endl;
+    buffer << "> You have " << ((float)assetOwned / (float)ASSET_MAX_AMOUNT) * 100 << "% of the market" << "\n";
     lastCommandOutput = buffer.str();
 }
 
@@ -314,13 +308,14 @@ void DrawGraph()
         // Loop for graph width.
         for (int gWidth = 0; gWidth < 116; gWidth++)
         {
-            // If there is a value at this position.
-            if (gHeight == marketGraph[gWidth][0])
+            // If there isn't a value at this position.
+            if (gHeight != marketGraph[gWidth][0]) std::cout << " ";
+
+            else
             {
                 // Draw corresponding output.
                 DrawMarketTrend(marketGraph[gWidth][1]);
             }
-            else std::cout << " ";
         }
 
         std::cout << "\n";
@@ -337,7 +332,7 @@ void EraseGraph()
     for (int i = 0; i < graphHeight; i++)
     {
         printf("\x1b[2K");
-        std::cout << std::endl;
+        std::cout << "\n";
     }
 }
 
@@ -491,7 +486,7 @@ void InvestorDecision(Investor& investor)
         }
     }
     // Investor cannot see the fall to come and will sell late
-    else if (!marketTrendingUp && foresight <= marketTrendingUp)
+    else if (!marketTrendingUp && foresight <= marketTrendForecast)
     {
         // Sell too late.
 
@@ -507,7 +502,7 @@ void InvestorDecision(Investor& investor)
         }
     }
     // Cannot see future buy late and get worse/no returns.
-    else if (marketTrendingUp && foresight <= marketTrendingUp)
+    else if (marketTrendingUp && foresight <= marketTrendForecast)
     {
 
     }
