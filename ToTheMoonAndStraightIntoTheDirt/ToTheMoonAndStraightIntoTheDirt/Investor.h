@@ -12,9 +12,9 @@ public:
     unsigned short actionInDays = 0;
 
     // Investor stats determine their investment strategy.
-    const unsigned short knowledge = 0;
-    const unsigned short gambler = 0;
-    const unsigned short hopeful = 0;
+    const unsigned short knowledge = 0; // Ability or inability to predict market trends.
+    const unsigned short gambler = 0; // likelihood at selling at low profits higher the higher profit margin needs to be
+    const unsigned short hopeful = 0; // Buy amount multiplier higher it is more they buy.
 
     void Buy();
     void Sell();

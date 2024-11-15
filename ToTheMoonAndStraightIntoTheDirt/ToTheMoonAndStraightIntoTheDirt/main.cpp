@@ -438,7 +438,7 @@ void InvestorDecision(Investor& investor)
     // Likelihood of selling.
     int sellWeight = 0;
 
-    int foresight = marketTrendForecast * (investor.knowledge / 10);
+    int foresight = marketTrendForecast * (investor.knowledge / 100);
 
     // If decision is already made by percentage 
     if (investor.actionInDays >= 0 && investor.isBuying)
@@ -448,6 +448,7 @@ void InvestorDecision(Investor& investor)
         return;
     }
 
+    // If decision is already made sell percentage each day.
     else if (investor.actionInDays >= 0 && !investor.isBuying)
     {
         investor.Sell();
@@ -455,22 +456,60 @@ void InvestorDecision(Investor& investor)
         return;
     }
 
-    // 
+    /* If investor predicts market will trend up
+    * start buying large amounts right away and hold
+    */
     if (marketTrendingUp && foresight <= marketTrendForecast)
     {
-        investor.actionInDays = foresight;
-        investor.isBuying = true;
+        // Hopeful people buy larger amounts
+        if (investor.hopeful < marketTrendForecast * (investor.hopeful / 100))
+        {
+            // START BUYING MORE.
+            investor.actionInDays = foresight * (investor.hopeful / 100);
+            investor.isBuying = true;
+        }
+        else
+        {
+            // FAVOUR HOLDING ASSET.
+        }
     }
 
-    if (!marketTrendingUp && investor.knowledge >= marketTrendForecast)
+    /* If investor predicts market will start trending down
+    * start start selling slowly and sell most at predicted peak (end of actionInDays)
+    */
+    else if (!marketTrendingUp && foresight >= marketTrendForecast)
     {
-        // Favour selling.
+        // If gambler test their luck
+        float gamblerMultiplier = investor.gambler / 100;
+        if (currentProfit >= investor.assetBoughtPrice * gamblerMultiplier)
+        {
+            // favour selling.
+        }
+        else
+        {
+            // Sell very quickly.
+        }
     }
-
-    float gamblerMultiplier = investor.gambler / 100;
-    if (currentProfit >= investor.assetBoughtPrice * gamblerMultiplier)
+    // Investor cannot see the fall to come and will sell late
+    else if (!marketTrendingUp && foresight <= marketTrendingUp)
     {
-        // favour selling.
+        // Sell too late.
+
+        // If gambler try holding even at a price drop.
+        float gamblerMultiplier = investor.gambler / 100;
+        if (currentProfit >= investor.assetBoughtPrice * gamblerMultiplier)
+        {
+            // favour holding
+        }
+        else
+        {
+            // Sell very quickly.
+        }
+    }
+    // Cannot see future buy late and get worse/no returns.
+    else if (marketTrendingUp && foresight <= marketTrendingUp)
+    {
+
     }
 }
 

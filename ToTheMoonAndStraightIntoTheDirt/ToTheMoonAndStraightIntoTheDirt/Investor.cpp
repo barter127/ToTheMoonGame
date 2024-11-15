@@ -5,6 +5,8 @@ void Investor::Buy()
 {
 	investorMoney -= assetOwned * assetPrice;
 	assetOwned += assetOwned / actionInDays;
+
+	actionInDays--;
 }
 
 void Investor::Sell()
@@ -14,4 +16,6 @@ void Investor::Sell()
 	money += profit;
 	totalProfit += profit;
 	assetOwned -= assetOwned / actionInDays;
+
+	actionInDays--;
 }
