@@ -5,16 +5,13 @@
 #include <sstream>
 #include <map>
 #include <functional>
+
 #include "inputvalidation.h"
 #include "start+end.h"
+#include "Investor.h"
+#include "Market.h"
 
 using namespace std::chrono_literals;
-
-// Player statistics.
-double money = 1000; // Needs negative values for possib;e debt mechanic.
-int assetOwned = 0;
-float assetPrice = 25.0;
-int day = 1;
 
 // Graph drawing.
 float lastPrice = 12;
@@ -22,7 +19,7 @@ int lastGraphChange = 0;
 int lastGraphHeight = 12;
 const int GRAPH_TOP = 50;
 const int GRAPH_BOTTOM = 1;
-const float Money_Multiplier = 2.0;
+const int Money_Multiplier = 2;
 
 std::string lastCommandOutput;
 
@@ -34,16 +31,8 @@ std::string commandInput = "";
 // 480 bytes
 short marketGraph[116][2];
 
-struct investor
-{
-    float money;
-    int assetOwned;
-    int knowledge = 0;
-    int gambler = 0;
-    int hopeful = 0;
-};
-
-bool marketTrendingUp;
+static bool marketTrendingUp;
+static int marketTrendForecast; // How long the market will continue to trend this way.
 
 // Command input.
 void GetCommand();
@@ -56,20 +45,9 @@ void Buy();
 void Sell();
 void NextDay();
 void Help();
+void Dong();
+void Share();
 void Exit();
-
-std::map<std::string, std::function<void()>> commands
-{
-    {"buy", Buy},
-    {"b", Buy},
-    {"sell", Sell},
-    {"s", Sell},
-    {"help", Help},
-    {"exit", Exit}
-};
-
-// Handle Price.
-inline void ChangeAssetPrice(int increase);
 
 // Handle graph.
 void DrawGraph();
@@ -81,21 +59,28 @@ void DrawMarketTrend(int fluctuation);
 // Used only once.
 void IntialiseGraph();
 
-bool timer = true;
+std::map<std::string, std::function<void()>> commands
+{
+    {"buy", Buy},
+    {"b", Buy},
+    {"sell", Sell},
+    {"s", Sell},
+    {"help", Help},
+    {"dong", Dong},
+    {"share", Share},
+    {"exit", Exit}
+};
 
-// Timer code by The Cherno. Pretyy sure 90% of this isn't nessecary.
+static bool timerOn = true; 
 void Timer()
 {
-    while (true)
+    timerOn = true;
+
+    while (timerOn)
     {
         std::this_thread::sleep_for(3s);
 
-        system("cls");
-        UpdateMarket();
-        DrawGraph();
-
-        std::cout << "> Current price: " << assetPrice << std::endl << std::endl;
-        std::cout << lastCommandOutput;
+        NextDay();
     }
 }
 
@@ -105,27 +90,22 @@ int main()
     system("Color 0A");
 
     //PLEASE PLEASE PLEASE PLEASE PLEASE PLEASE PLEASE PLEASE DON'T FORGET TO UNCOMMENT THIS
-    //DisplayTitle();
+    // DisplayTitle();
 
     IntialiseGraph();
     DrawGraph();
-    std::cout << "> Current price: " << assetPrice << std::endl << std::endl;
+    std::cout << "> Current price: " << assetPrice << std::endl;
+    std::cout << "> Money: " << money << std::endl << std::endl;
    
     std::thread Countdown(Timer);
 
-    while (true)
+    while (!endGame)
     {
         GetCommand();
-
-
-        if (endGame)
-        {
-            break;
-        }
+        std::cout << lastCommandOutput << std::endl;
     }
 
     std::cout << std::endl;
-
     PrintEndGameMessage();
 }
 
@@ -282,29 +262,42 @@ void NextDay()
     UpdateMarket();
     DrawGraph();
 
-    std::cout << "> Current price: " << assetPrice << std::endl << std::endl;
-    std::cout << lastCommandOutput;
+    std::cout << "> Current price: " << assetPrice << std::endl;
+    std::cout << "> Money: " << money << std::endl;
+    std::cout << lastCommandOutput << std::endl;
 }
 
 void Help()
 {
-    std::cout << ">> buy <amount>: Buys amount of doughnuts" << std::endl
-        << ">> sell <amount>: Sells amount of doughnuts" << std::endl
-        << ">> skip: Skips day" << std::endl
-        << ">> help: Dude you just used it you know what it does" << std::endl
-        << ">> exit: exits game" << std::endl << std::endl;
+    std::ostringstream buffer;
+    buffer << "Command List:" << std::endl
+        << "    >> buy <amount>: Buys amount of doughnuts" << std::endl
+        << "    >> sell <amount>: Sells amount of doughnuts" << std::endl
+        << "    >> help: Dude you just used it you know what it does" << std::endl
+        << "    >> dong: Prints the amount of money you have in Vietnamese Dong" << std::endl
+        << "    >> share: Prints your share percentage" << std::endl
+        << "    >> exit: exits game" << std::endl;
+    lastCommandOutput = buffer.str();
+}
+
+void Dong()
+{
+    std::ostringstream buffer;
+    buffer << "> You have " << money * 32174.30 << " Dong" << std::endl;
+    lastCommandOutput = buffer.str();
+}
+
+void Share()
+{
+    std::ostringstream buffer;
+    buffer << "> You have " << ((float)assetOwned / (float)ASSET_MAX_AMOUNT) * 100 << "% of the market" << std::endl;
+    lastCommandOutput = buffer.str();
 }
 
 // Exits game.
 void Exit()
 {
     endGame = true;
-}
-
-// Price.
-inline void ChangeAssetPrice(int increase)
-{
-    assetPrice += increase;
 }
 
 // Graph.
@@ -367,7 +360,7 @@ void DrawMarketTrend(int fluctuation)
     if (fluctuation == 1) std::cout << "/";
     else if (fluctuation == 0) std::cout << "_";
     else std::cout << "\\";
-    // Plan to use moe vertical price changes fell short
+    // Plan to use more vertical price changes fell short
     // the lines become slightly unaligned and makes it look weird.
 }
 
@@ -423,15 +416,60 @@ void IntialiseGraph()
     // Set Seed.
     srand(time(NULL));
 
-    for (int i = 0; i < 116; i++)
+    for (int i = 0; i < sizeof marketGraph/ sizeof marketGraph[0]; i++)
     {
         UpdateMarket();
     }
 }
 
-void InvestorDecision()
+void InvestorDecision(Investor& investor)
 {
+    //float money = 0;
+    //float assetBoughtPrice = 0;
+    //float total profit = 0;
+    //int assetOwned = 0;
+    //int knowledge = 0;
+    //int gambler = 0;
+    //int hopeful = 0;
 
+    // Profit if sold now
+    float currentProfit = assetPrice - investor.assetBoughtPrice;
+
+    // Likelihood of selling.
+    int sellWeight = 0;
+
+    int foresight = marketTrendForecast * (investor.knowledge / 10);
+
+    // Sell percentage of 
+    if (investor.actionInDays >= 0 && investor.isBuying)
+    {
+        investor.Buy();
+        // MARKET NOTE
+        return;
+    }
+    else if (investor.actionInDays >= 0 && !investor.isBuying)
+    {
+        investor.Sell();
+        // MARKET NOTE
+    }
+
+    // 
+    if (marketTrendingUp && foresight <= marketTrendForecast)
+    {
+        investor.actionInDays = foresight;
+        investor.isBuying = true;
+    }
+
+    if (!marketTrendingUp && investor.knowledge >= marketTrendForecast)
+    {
+        // Favour selling.
+    }
+
+    float gamblerMultiplier = investor.gambler / 100;
+    if (currentProfit >= investor.assetBoughtPrice * gamblerMultiplier)
+    {
+        // favour selling.
+    }
 }
 
 float RandomRange(int lowest, int highest)

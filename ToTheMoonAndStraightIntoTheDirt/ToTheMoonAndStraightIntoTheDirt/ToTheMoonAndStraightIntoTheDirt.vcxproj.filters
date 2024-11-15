@@ -14,12 +14,21 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Investor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="inputvalidation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="start+end.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Investor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Market.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
