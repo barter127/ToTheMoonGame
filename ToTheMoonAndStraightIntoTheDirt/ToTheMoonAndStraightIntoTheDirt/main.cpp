@@ -440,17 +440,19 @@ void InvestorDecision(Investor& investor)
 
     int foresight = marketTrendForecast * (investor.knowledge / 10);
 
-    // Sell percentage of 
+    // If decision is already made by percentage 
     if (investor.actionInDays >= 0 && investor.isBuying)
     {
         investor.Buy();
         // MARKET NOTE
         return;
     }
+
     else if (investor.actionInDays >= 0 && !investor.isBuying)
     {
         investor.Sell();
         // MARKET NOTE
+        return;
     }
 
     // 
