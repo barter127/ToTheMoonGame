@@ -17,12 +17,18 @@
     <ClCompile Include="Investor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Start+End.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Graph.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="inputvalidation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="start+end.h">
+    <ClInclude Include="Start+End.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Investor.h">

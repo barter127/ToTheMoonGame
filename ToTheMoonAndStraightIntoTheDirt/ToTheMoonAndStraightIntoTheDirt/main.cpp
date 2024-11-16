@@ -7,7 +7,7 @@
 #include <functional>
 
 #include "inputvalidation.h"
-#include "start+end.h"
+#include "Start+End.h"
 #include "Investor.h"
 #include "Market.h"
 #include "Graph.h"
@@ -19,14 +19,28 @@ std::string lastCommandOutput;
 
 const int ASSET_MAX_AMOUNT = 1'000'000; // A mil
 
+// Graph vars.
+float lastPrice = 12;
+int lastGraphChange = 0;
+int lastGraphHeight = 12;
+const int GRAPH_TOP = 25;
+const int GRAPH_BOTTOM = 1;
+const int Money_Multiplier = 2;
+
+// Player statistics.
+double money = 1000; // Needs negative values for possible debt mechanic.
+unsigned int assetOwned = 0;
+float assetPrice = 25.0;
+unsigned int day = 1; // Maybe problematic for long play sessions.
+
 bool endGame = false;
 std::string commandInput = "";
 
 // 480 bytes
 short marketGraph[116][2];
 
-static bool marketTrendingUp;
-static int marketTrendForecast; // How long the market will continue to trend this way.
+bool marketTrendingUp;
+int marketTrendForecast; // How long the market will continue to trend this way.
 
 // Command input.
 void GetCommand();
@@ -42,16 +56,6 @@ void Help();
 void Dong();
 void Share();
 void Exit();
-
-// Handle graph.
-void DrawGraph();
-void EraseGraph();
-void DrawYAxisLabel(int graphHeight);
-void UpdateMarket();
-float RandomRange(int lowest, int highest);
-void DrawMarketTrend(int fluctuation);
-// Used only once.
-void IntialiseGraph();
 
 std::map<std::string, std::function<void()>> commands
 {
@@ -86,8 +90,8 @@ int main()
     //PLEASE PLEASE PLEASE PLEASE PLEASE PLEASE PLEASE PLEASE DON'T FORGET TO UNCOMMENT THIS
     // DisplayTitle();
 
-    IntialiseGraph();
-    DrawGraph();
+    IntialiseGraph(marketGraph);
+    DrawGraph(marketGraph);
     std::cout << "> Current price: " << assetPrice << "\n";
     std::cout << "> Money: " << money << "\n" << "\n";
    
@@ -253,8 +257,8 @@ void Sell()
 void NextDay()
 {
     system("cls");
-    UpdateMarket();
-    DrawGraph();
+    UpdateMarket(marketGraph);
+    DrawGraph(marketGraph);
 
     std::cout << "> Current price: " << assetPrice << "\n";
     std::cout << "> Money: " << money << "\n";
@@ -292,129 +296,6 @@ void Share()
 void Exit()
 {
     endGame = true;
-}
-
-// Graph.
-void DrawGraph()
-{
-    printf("\033[%d;%dH", 1, 1);
-
-    // Loop for height.
-    for (int gHeight = 25; gHeight > 0 ; gHeight--)
-    {
-        // Draw left side of graph.
-        DrawYAxisLabel(gHeight);
-
-        // Loop for graph width.
-        for (int gWidth = 0; gWidth < 116; gWidth++)
-        {
-            // If there isn't a value at this position.
-            if (gHeight != marketGraph[gWidth][0]) std::cout << " ";
-
-            else
-            {
-                // Draw corresponding output.
-                DrawMarketTrend(marketGraph[gWidth][1]);
-            }
-        }
-
-        std::cout << "\n";
-    }
-}
-
-void EraseGraph()
-{
-    printf("\033[%d;%dH", 1, 1);
-
-    // +1 for current price line
-    int graphHeight = (GRAPH_TOP / Money_Multiplier) + 1;
-
-    for (int i = 0; i < graphHeight; i++)
-    {
-        printf("\x1b[2K");
-        std::cout << "\n";
-    }
-}
-
-void DrawYAxisLabel(int graphHeight)
-{
-    // Draw
-    if ((graphHeight * 2) % 5 == 0)
-    {
-        // Display graph numbers.
-        std::cout << graphHeight * 2 << "-";
-    }
-    else std::cout << "   ";
-
-    // Draw seperator. 
-    std::cout << "|";
-}
-
-void DrawMarketTrend(int fluctuation)
-{
-    if (fluctuation == 1) std::cout << "/";
-    else if (fluctuation == 0) std::cout << "_";
-    else std::cout << "\\";
-    // Plan to use more vertical price changes fell short
-    // the lines become slightly unaligned and makes it look weird.
-}
-
-void UpdateMarket()
-{
-    // Move all fields over by one.
-    for (int i = 0; i < 115; i++) // Loop 1 less than length.
-    {
-        marketGraph[i][0] = marketGraph[i + 1][0];
-        marketGraph[i][1] = marketGraph[i + 1][1];
-    }
-
-    // Limit price. Limiting from a game POV but text based really limits things.
-    int lowest = (assetPrice <= GRAPH_BOTTOM + 2) ? 0 : -2;
-    int highest = (assetPrice >= GRAPH_TOP) ? 0 : 2;
-
-    float fluctuation = RandomRange(lowest, highest);
-
-    // If decimal and int fluctuation are randomised using the same float it makes the overall graph line too centred
-    //The addition of decimals is important for immersion and player fantasy of actually being a broker.
-    
-    lowest = (fluctuation <= -2) ? 0 : -100;
-    highest = (fluctuation >= 2) ? 0 : 100;
-
-    float decimal = RandomRange(lowest, highest);
-
-    fluctuation += (decimal / 100);
-
-    assetPrice += fluctuation;
-
-    int graphHeight = round(assetPrice / Money_Multiplier);
-    marketGraph[115][0] = graphHeight;
-
-
-    int graphChange = graphHeight - lastGraphHeight;
-    marketGraph[115][1] = graphChange;
-
-    // Check to align graph lines.
-    if ((lastGraphChange == -1 || lastGraphChange == 0) && graphChange == 1)
-    {
-        marketGraph[115][0] = graphHeight - 1;
-    }
-    else
-    {
-        marketGraph[115][0] = graphHeight;
-    }
-
-    lastGraphHeight = graphHeight;
-}
-
-void IntialiseGraph()
-{
-    // Set Seed.
-    srand(time(NULL));
-
-    for (int i = 0; i < sizeof marketGraph/ sizeof marketGraph[0]; i++)
-    {
-        UpdateMarket();
-    }
 }
 
 void InvestorDecision(Investor& investor)
@@ -506,10 +387,4 @@ void InvestorDecision(Investor& investor)
     {
 
     }
-}
-
-float RandomRange(int lowest, int highest)
-{
-    int range = (highest - lowest) + 1;
-    return (rand() % range) + lowest; // Problematic if lowest is >0.
 }

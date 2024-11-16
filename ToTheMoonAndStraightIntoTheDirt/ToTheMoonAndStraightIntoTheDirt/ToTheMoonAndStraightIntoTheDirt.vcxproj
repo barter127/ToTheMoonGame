@@ -127,15 +127,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Graph.cpp" />
     <ClCompile Include="Investor.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Start+End.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Graph.h" />
     <ClInclude Include="inputvalidation.h" />
     <ClInclude Include="Investor.h" />
     <ClInclude Include="Market.h" />
-    <ClInclude Include="start+end.h" />
+    <ClInclude Include="Start+End.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
