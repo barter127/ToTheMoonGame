@@ -9,7 +9,8 @@ private:
 public:
     float assetBoughtPrice = 0; // Cumulative price their assets were bought at.
     bool isBuying = false;
-    unsigned short actionInDays = 0;
+    unsigned short actionInDays = 0; // Trade over these days.
+    unsigned amountToTrade = 0; // Desired amount to buy or sell.
 
     // Investor stats determine their investment strategy.
     const unsigned short knowledge = 0; // Ability or inability to predict market trends.
@@ -18,5 +19,8 @@ public:
 
     void Buy();
     void Sell();
+    void SellMax();
+    void BuyMax();
+    bool AssetOwned();
 };
 

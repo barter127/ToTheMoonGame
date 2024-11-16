@@ -136,7 +136,6 @@
     <ClInclude Include="Graph.h" />
     <ClInclude Include="inputvalidation.h" />
     <ClInclude Include="Investor.h" />
-    <ClInclude Include="Market.h" />
     <ClInclude Include="Start+End.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

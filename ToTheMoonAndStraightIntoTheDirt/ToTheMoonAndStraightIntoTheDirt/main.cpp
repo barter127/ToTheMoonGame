@@ -9,7 +9,6 @@
 #include "inputvalidation.h"
 #include "Start+End.h"
 #include "Investor.h"
-#include "Market.h"
 #include "Graph.h"
 
 
@@ -46,7 +45,7 @@ int marketTrendForecast; // How long the market will continue to trend this way.
 void GetCommand();
 std::string GetCommandWord(std::string input);
 template<typename varType>
-auto GetParameter(std::string commandLine, typename varType, int parmIndex);
+varType GetParameter(std::string commandLine, typename varType, int parmIndex);
 
 // List of commands.
 void Buy();
@@ -106,6 +105,8 @@ int main()
     std::cout << "\n";
     PrintEndGameMessage();
 }
+
+// I could have a seperate file for command func and logic but because it's so intertwined with vars in main it makes more sense here while developing commands.
 
 // Read command inputs.
 #pragma region Overloaded Conversion Functions
@@ -185,7 +186,7 @@ std::string GetCommandWord(std::string input)
 
 // Call inside command function to get data from user input.
 template<typename varType>
-auto GetParameter(std::string commandLine, typename varType, int parmIndex)
+varType GetParameter(std::string commandLine, typename varType, int parmIndex)
 {
     std::string parm = " ";
     varType type{}; // Maybe this is awful who knows.
@@ -300,14 +301,6 @@ void Exit()
 
 void InvestorDecision(Investor& investor)
 {
-    //float money = 0;
-    //float assetBoughtPrice = 0;
-    //float total profit = 0;
-    //int assetOwned = 0;
-    //int knowledge = 0;
-    //int gambler = 0;
-    //int hopeful = 0;
-
     // Profit if sold now
     float currentProfit = assetPrice - investor.assetBoughtPrice;
 
@@ -316,10 +309,12 @@ void InvestorDecision(Investor& investor)
 
     int foresight = marketTrendForecast * (investor.knowledge / 100);
 
-    // If decision is already made by percentage 
+    // maxPossiblePurchase * (buyweight / 10)
+
+    // If decision is already made buy based on buy weight. 
     if (investor.actionInDays >= 0 && investor.isBuying)
     {
-        investor.Buy();
+        investor.Buy(21);
         // MARKET NOTE
         return;
     }
@@ -327,33 +322,15 @@ void InvestorDecision(Investor& investor)
     // If decision is already made sell percentage each day.
     else if (investor.actionInDays >= 0 && !investor.isBuying)
     {
-        investor.Sell();
+        investor.Sell(21);
         // MARKET NOTE
         return;
-    }
-
-    /* If investor predicts market will trend up
-    * start buying large amounts right away and hold
-    */
-    if (marketTrendingUp && foresight <= marketTrendForecast)
-    {
-        // Hopeful people buy larger amounts
-        if (investor.hopeful < marketTrendForecast * (investor.hopeful / 100))
-        {
-            // START BUYING MORE.
-            investor.actionInDays = foresight * (investor.hopeful / 100);
-            investor.isBuying = true;
-        }
-        else
-        {
-            // FAVOUR HOLDING ASSET.
-        }
     }
 
     /* If investor predicts market will start trending down
     * start start selling slowly and sell most at predicted peak (end of actionInDays)
     */
-    else if (!marketTrendingUp && foresight >= marketTrendForecast)
+    if (!marketTrendingUp && foresight >= marketTrendForecast)
     {
         // If gambler test their luck
         float gamblerMultiplier = investor.gambler / 100;
@@ -365,7 +342,51 @@ void InvestorDecision(Investor& investor)
         {
             // Sell very quickly.
         }
+
     }
+
+    // Investor cannot see the fall to come and will sell late
+    else if (!marketTrendingUp && foresight <= marketTrendForecast)
+    {
+        // Sell too late.
+
+        // If gambler try holding even at a price drop.
+        float gamblerMultiplier = (investor.gambler / 100) * 2;
+        if (currentProfit >= investor.assetBoughtPrice * gamblerMultiplier)
+        {
+            // favour holding
+        }
+        else
+        {
+            // Sell very quickly.
+        }
+    }
+
+    // If investor has assets sell.
+    if (investor.AssetOwned())
+    {
+        // Player doesn't have anything and can only buy. Selling consideration is pointless.
+        return;
+    }
+
+    /* If investor predicts market will start trending down
+    * start start selling slowly and sell most at predicted peak (end of actionInDays)
+    */
+    if (!marketTrendingUp && foresight >= marketTrendForecast)
+    {
+        // If gambler test their luck
+        float gamblerMultiplier = investor.gambler / 100;
+        if (currentProfit >= investor.assetBoughtPrice * gamblerMultiplier)
+        {
+            investor.SellMax();
+        }
+        else
+        {
+            // hold.
+        }
+
+    }
+
     // Investor cannot see the fall to come and will sell late
     else if (!marketTrendingUp && foresight <= marketTrendForecast)
     {
@@ -381,10 +402,5 @@ void InvestorDecision(Investor& investor)
         {
             // Sell very quickly.
         }
-    }
-    // Cannot see future buy late and get worse/no returns.
-    else if (marketTrendingUp && foresight <= marketTrendForecast)
-    {
-
     }
 }
