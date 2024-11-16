@@ -311,74 +311,45 @@ void InvestorDecision(Investor& investor)
 
     // maxPossiblePurchase * (buyweight / 10)
 
-    // If decision is already made buy based on buy weight. 
-    if (investor.actionInDays >= 0 && investor.isBuying)
+    if (investor.actionInDays > 0)
     {
-        investor.Buy(21);
-        // MARKET NOTE
-        return;
+        // If decision is already made buy based on buy weight. 
+        if (investor.isBuying)
+        {
+            investor.Buy();
+            return;
+        }
+
+        else
+        {
+            investor.Sell();
+            return;
+        }
     }
 
-    // If decision is already made sell percentage each day.
-    else if (investor.actionInDays >= 0 && !investor.isBuying)
+
+    // Buy slowly
+    if (!marketTrendingUp && foresight >= marketTrendForecast)
     {
-        investor.Sell(21);
-        // MARKET NOTE
-        return;
+        Buy();
+        // calculate amount to buy.
     }
+
+
+    // Player doesn't have anything and can only buy. Selling consideration is pointless.
+    if (!investor.AssetOwned()) return;
+
 
     /* If investor predicts market will start trending down
     * start start selling slowly and sell most at predicted peak (end of actionInDays)
     */
-    if (!marketTrendingUp && foresight >= marketTrendForecast)
+    if (marketTrendingUp && foresight >= marketTrendForecast)
     {
-        // If gambler test their luck
+        // If profit is high enough start selling.
         float gamblerMultiplier = investor.gambler / 100;
         if (currentProfit >= investor.assetBoughtPrice * gamblerMultiplier)
         {
-            // favour selling.
-        }
-        else
-        {
-            // Sell very quickly.
-        }
-
-    }
-
-    // Investor cannot see the fall to come and will sell late
-    else if (!marketTrendingUp && foresight <= marketTrendForecast)
-    {
-        // Sell too late.
-
-        // If gambler try holding even at a price drop.
-        float gamblerMultiplier = (investor.gambler / 100) * 2;
-        if (currentProfit >= investor.assetBoughtPrice * gamblerMultiplier)
-        {
-            // favour holding
-        }
-        else
-        {
-            // Sell very quickly.
-        }
-    }
-
-    // If investor has assets sell.
-    if (investor.AssetOwned())
-    {
-        // Player doesn't have anything and can only buy. Selling consideration is pointless.
-        return;
-    }
-
-    /* If investor predicts market will start trending down
-    * start start selling slowly and sell most at predicted peak (end of actionInDays)
-    */
-    if (!marketTrendingUp && foresight >= marketTrendForecast)
-    {
-        // If gambler test their luck
-        float gamblerMultiplier = investor.gambler / 100;
-        if (currentProfit >= investor.assetBoughtPrice * gamblerMultiplier)
-        {
-            investor.SellMax();
+            investor.actionInDays = marketTrendForecast;
         }
         else
         {
@@ -390,17 +361,7 @@ void InvestorDecision(Investor& investor)
     // Investor cannot see the fall to come and will sell late
     else if (!marketTrendingUp && foresight <= marketTrendForecast)
     {
-        // Sell too late.
+        // Sell faster / all.
 
-        // If gambler try holding even at a price drop.
-        float gamblerMultiplier = investor.gambler / 100;
-        if (currentProfit >= investor.assetBoughtPrice * gamblerMultiplier)
-        {
-            // favour holding
-        }
-        else
-        {
-            // Sell very quickly.
-        }
     }
 }
