@@ -47,6 +47,8 @@ std::string GetCommandWord(std::string input);
 template<typename varType>
 varType GetParameter(std::string commandLine, typename varType, int parmIndex);
 
+inline void SetSeed();
+
 // List of commands.
 void Buy();
 void Sell();
@@ -88,6 +90,8 @@ int main()
 
     //PLEASE PLEASE PLEASE PLEASE PLEASE PLEASE PLEASE PLEASE DON'T FORGET TO UNCOMMENT THIS
     // DisplayTitle();
+
+    SetSeed();
 
     IntialiseGraph(marketGraph);
     DrawGraph(marketGraph);
@@ -328,11 +332,11 @@ void InvestorDecision(Investor& investor)
     }
 
 
-    // Buy slowly
     if (!marketTrendingUp && foresight >= marketTrendForecast)
     {
+        investor.actionInDays = marketTrendForecast;
+
         Buy();
-        // calculate amount to buy.
     }
 
 
@@ -351,11 +355,6 @@ void InvestorDecision(Investor& investor)
         {
             investor.actionInDays = marketTrendForecast;
         }
-        else
-        {
-            // hold.
-        }
-
     }
 
     // Investor cannot see the fall to come and will sell late
@@ -364,4 +363,9 @@ void InvestorDecision(Investor& investor)
         // Sell faster / all.
 
     }
+}
+
+inline void SetSeed()
+{
+    srand(time(NULL));
 }

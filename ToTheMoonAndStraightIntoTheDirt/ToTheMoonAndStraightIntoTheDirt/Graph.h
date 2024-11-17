@@ -1,5 +1,4 @@
 #pragma once
-#include <iostream> // AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 
 // Graph drawing.
 extern float lastPrice; 
@@ -21,6 +20,11 @@ void DrawYAxisLabel(int graphHeight);
 // Check which symbol to draw depending if the market went up or down.
 void DrawMarketTrend(short fluctuation);
 
+// literally just prints a space. Used to avoid iostream in a header.
+void DrawWhiteSpace();
+
+void NewLine();
+
 float RandomRange(int lowest, int highest);
 
 
@@ -32,7 +36,8 @@ float RandomRange(int lowest, int highest);
 template <size_t rows, size_t cols>
 void DrawGraph(short(&marketGraph)[rows][cols])
 {
-    printf("\033[%d;%dH", 1, 1);
+    // Moves cursor to top.
+    //printf("\033[%d;%dH", 1, 1);
 
     // Loop for height.
     for (int gHeight = GRAPH_TOP; gHeight > 0; gHeight--)
@@ -44,7 +49,7 @@ void DrawGraph(short(&marketGraph)[rows][cols])
         for (int gWidth = 0; gWidth < rows; gWidth++)
         {
             // If there isn't a value at this position.
-            if (gHeight != marketGraph[gWidth][0]) std::cout << " ";
+            if (gHeight != marketGraph[gWidth][0]) DrawWhiteSpace();
 
             else
             {
@@ -53,7 +58,7 @@ void DrawGraph(short(&marketGraph)[rows][cols])
             }
         }
 
-        std::cout << "\n";
+        NewLine();
     }
 }
 
@@ -111,9 +116,6 @@ void UpdateMarket(short(&marketGraph)[rows][cols])
 template <size_t rows, size_t cols>
 void IntialiseGraph(short(&marketGraph)[rows][cols])
 {
-    // Set Seed.
-    srand(time(NULL));
-
     for (int i = 0; i < rows; i++)
     {
         UpdateMarket(marketGraph);

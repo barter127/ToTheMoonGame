@@ -1,33 +1,45 @@
 #include "Investor.h"
+#include <iostream>
 
 extern float assetPrice;
 
 void Investor::Buy()
 {
-	int maxPurchase = investorMoney / assetPrice;
-
-	if (maxPurchase > 0)
+	// Validate variables.
+	if (actionInDays > 0 && amountToTrade > 0)
 	{
-		int buyAmount = (maxPurchase / amountToTrade) * actionInDays;
+		int maxPurchase = investorMoney / assetPrice;
 
-		investorMoney -= buyAmount * assetPrice;
-		assetOwned += buyAmount;
+		// Has money to buy assets.
+		if (maxPurchase > 0)
+		{
+			int buyAmount = (maxPurchase / amountToTrade) * actionInDays;
 
-		actionInDays--;
-	}	
+			investorMoney -= buyAmount * assetPrice;
+			assetOwned += buyAmount;
+
+			actionInDays--;
+		}
+	}
+	else std::cerr << "Tried to buy with invalid variables";
 }
 
 void Investor::Sell()
 {
-	int sellAmount = amountToTrade / actionInDays;
-	float profit = sellAmount * assetPrice;
+	// Validate variables.
+	if (actionInDays > 0 && amountToTrade > 0)
+	{
+		int sellAmount = amountToTrade / actionInDays;
+		float profit = sellAmount * assetPrice;
 
-	investorMoney += profit;
-	totalProfit += profit;
-	assetOwned -= sellAmount;
+		investorMoney += profit;
+		totalProfit += profit;
+		assetOwned -= sellAmount;
 
-	actionInDays--;
-	assetPrice -= 0.01 * sellAmount;
+		actionInDays--;
+		assetPrice -= 0.01 * sellAmount;
+	}
+	else std::cerr << "Tried to sell with invalid variables";
 }
 
 void Investor::BuyMax()

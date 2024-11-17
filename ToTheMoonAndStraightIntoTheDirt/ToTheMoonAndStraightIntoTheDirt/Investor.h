@@ -7,6 +7,24 @@ private:
     float totalProfit = 0;
 
 public:
+
+    // Randomise stats.
+    Investor():
+        investorMoney(rand() % 1'000'000 + 1),
+        knowledge(rand() % 100 + 1),
+        gambler(rand() % 100 + 1),
+        hopeful(rand() % 100 + 1)
+    {}
+
+    Investor(float money, unsigned short know, unsigned short gamble, unsigned short hope):
+        investorMoney(money),
+        knowledge(know),
+        gambler(gamble),
+        hopeful(hope)
+    {}
+
+
+
     float assetBoughtPrice = 0; // Cumulative price their assets were bought at.
     bool isBuying = false;
     unsigned short actionInDays = 0; // Trade over these days.

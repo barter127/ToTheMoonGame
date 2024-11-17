@@ -44,6 +44,18 @@ void DrawMarketTrend(short fluctuation)
     }
 }
 
+void DrawWhiteSpace()
+{
+    std::cout << " ";
+}
+
+// I believe the trade off of having these not be inline is better than iostream in the header.
+void NewLine()
+{
+    // Printf supposed to be a lot quicker when just making a new line.
+    printf("\n");
+}
+
 float RandomRange(int lowest, int highest)
 {
     int range = (highest - lowest) + 1;
