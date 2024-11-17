@@ -59,5 +59,5 @@ void NewLine()
 float RandomRange(int lowest, int highest)
 {
     int range = (highest - lowest) + 1;
-    return (rand() % range) + lowest; // Problematic if lowest is >0.
+    return (rand() % range) + lowest; // Problematic if lowest is >0. 
 }

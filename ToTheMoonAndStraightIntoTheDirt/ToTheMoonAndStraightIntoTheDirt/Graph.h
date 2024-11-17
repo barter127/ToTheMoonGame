@@ -11,9 +11,6 @@ extern const int Money_Multiplier;
 // from main
 extern float assetPrice;
 
-// Erases top of console to 25 lines down (not really implemented just testing rn)
-void EraseGraph();
-
 // Draws the vertical line and numerical values to the left of the graph.
 void DrawYAxisLabel(int graphHeight);
 
@@ -26,9 +23,6 @@ void DrawWhiteSpace();
 void NewLine();
 
 float RandomRange(int lowest, int highest);
-
-
-
 
 
 

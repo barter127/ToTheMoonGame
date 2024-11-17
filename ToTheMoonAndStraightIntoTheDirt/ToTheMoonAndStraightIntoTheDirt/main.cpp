@@ -38,8 +38,8 @@ std::string commandInput = "";
 // 480 bytes
 short marketGraph[116][2];
 
-bool marketTrendingUp;
-int marketTrendForecast; // How long the market will continue to trend this way.
+bool marketTrendingUp = true;
+int marketTrendForecast = 5; // How long the market will continue to trend this way.
 
 // Command input.
 void GetCommand();
@@ -57,6 +57,16 @@ void Help();
 void Dong();
 void Share();
 void Exit();
+
+int investorsBuying = 0;
+int investorsSelling = 0;
+int investorsHolding = 0;
+
+Investor investor;
+
+//Investor investorArr[1000];
+
+void InvestorDecision(Investor& investor);
 
 std::map<std::string, std::function<void()>> commands
 {
@@ -80,11 +90,14 @@ void Timer()
         std::this_thread::sleep_for(3s);
 
         NextDay();
+
+        InvestorDecision(investor);
     }
 }
 
 int main()
 {
+
     // Set console colour. BG: Black Text: Green
     system("Color 0A");
 
@@ -306,62 +319,78 @@ void Exit()
 void InvestorDecision(Investor& investor)
 {
     // Profit if sold now
-    float currentProfit = assetPrice - investor.assetBoughtPrice;
+    float currentProfit = (assetPrice * investor.GetAssetOwned()) - investor.assetBoughtPrice;
 
     // Likelihood of selling.
     int sellWeight = 0;
+    marketTrendForecast--;
+    int foresight = marketTrendForecast * ((float)investor.knowledge / 5);
 
-    int foresight = marketTrendForecast * (investor.knowledge / 100);
-
-    // maxPossiblePurchase * (buyweight / 10)
-
+    // If decision is already made perform decision.
     if (investor.actionInDays > 0)
     {
-        // If decision is already made buy based on buy weight. 
+
         if (investor.isBuying)
         {
             investor.Buy();
+            investorsBuying++;
+
             return;
         }
 
-        else
+        else if (!investor.isBuying)
         {
             investor.Sell();
+            investorsSelling++;
+
             return;
         }
+
+        // Implicit hold asset.
+        investorsHolding++;
+        return;
     }
 
-
+    // Buy at predicted market low.
     if (!marketTrendingUp && foresight >= marketTrendForecast)
     {
         investor.actionInDays = marketTrendForecast;
+        investor.amountToTrade = investor.GetAssetOwned();
 
-        Buy();
+        investor.Buy();
     }
 
 
-    // Player doesn't have anything and can only buy. Selling consideration is pointless.
-    if (!investor.AssetOwned()) return;
+    // Can only buy
+    if (investor.GetAssetOwned() <= 0) return;
 
 
-    /* If investor predicts market will start trending down
-    * start start selling slowly and sell most at predicted peak (end of actionInDays)
-    */
+    // Predict market peak. Sell most at peak.
     if (marketTrendingUp && foresight >= marketTrendForecast)
     {
         // If profit is high enough start selling.
-        float gamblerMultiplier = investor.gambler / 100;
+        float gamblerMultiplier = investor.gambler / 5;
         if (currentProfit >= investor.assetBoughtPrice * gamblerMultiplier)
         {
             investor.actionInDays = marketTrendForecast;
+            investor.amountToTrade = investor.GetAssetOwned();
+
+            investor.Sell();
         }
+
+        // Otherwise it will be held.
     }
 
-    // Investor cannot see the fall to come and will sell late
+    // Investor cannot see the fall. Sell late
     else if (!marketTrendingUp && foresight <= marketTrendForecast)
     {
-        // Sell faster / all.
+        if (currentProfit > investor.assetBoughtPrice)
+        {
+            investor.actionInDays = marketTrendForecast;
+            investor.amountToTrade = investor.GetAssetOwned();
 
+            investor.Sell();
+        }
     }
 }
 

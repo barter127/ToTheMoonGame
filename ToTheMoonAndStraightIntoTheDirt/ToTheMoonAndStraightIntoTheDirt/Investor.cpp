@@ -2,6 +2,7 @@
 #include <iostream>
 
 extern float assetPrice;
+extern float assetPrice;
 
 void Investor::Buy()
 {
@@ -14,11 +15,16 @@ void Investor::Buy()
 		if (maxPurchase > 0)
 		{
 			int buyAmount = (maxPurchase / amountToTrade) * actionInDays;
+			float cost = buyAmount * assetPrice;
 
-			investorMoney -= buyAmount * assetPrice;
+
+			investorMoney -= cost;
 			assetOwned += buyAmount;
 
 			actionInDays--;
+			assetPrice += 0.01f;
+
+			totalProfit -= cost;
 		}
 	}
 	else std::cerr << "Tried to buy with invalid variables";
@@ -37,7 +43,9 @@ void Investor::Sell()
 		assetOwned -= sellAmount;
 
 		actionInDays--;
-		assetPrice -= 0.01 * sellAmount;
+		assetPrice -= (0.01f * sellAmount);
+
+		totalProfit += profit;
 	}
 	else std::cerr << "Tried to sell with invalid variables";
 }
@@ -51,7 +59,7 @@ void Investor::BuyMax()
 	totalProfit += cost;
 	assetOwned -= assetOwned;
 
-	assetPrice += 0.01 * maxPurchase;
+	assetPrice += (0.01f * maxPurchase);
 }
 
 void Investor::SellMax()
@@ -62,12 +70,10 @@ void Investor::SellMax()
 	totalProfit += profit;
 	assetOwned -= assetOwned;
 
-	assetPrice -= 0.01 * assetOwned;
+	assetPrice -= 0.01f * assetOwned;
 }
 
-bool Investor::AssetOwned()
+int Investor::GetAssetOwned()
 {
-	if (assetOwned > 0) return true;
-
-	return false;
+	return assetOwned;
 }
