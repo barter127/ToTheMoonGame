@@ -394,6 +394,13 @@ void InvestorDecision(Investor& investor)
     }
 }
 
+
+// skibidi toilet
+void skibiditoiler()
+{
+
+}
+
 inline void SetSeed()
 {
     srand(time(NULL));
