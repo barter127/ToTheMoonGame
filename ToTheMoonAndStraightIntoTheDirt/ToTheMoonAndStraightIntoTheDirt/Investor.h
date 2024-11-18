@@ -5,19 +5,19 @@ class Investor
 {
 private:
     float investorMoney = 0;
-    unsigned int assetOwned = 0;
+    unsigned int investorAssetOwned = 0;
     float totalProfit = 0;
 
 public:
 
     // Randomise stats.
     Investor():
-        investorMoney(rand() % 1'000'000 + 1),
+        investorMoney(rand() % 1000 + 1),
         knowledge(rand() % 10 + 1),
         gambler(rand() % 10 + 1),
         hopeful(rand() % 10 + 1),
 
-        assetOwned(10)
+        investorAssetOwned(10)
     {}
 
     // Set stats.
@@ -31,7 +31,6 @@ public:
 
 
     float assetBoughtPrice = 0; // Cumulative price their assets were bought at.
-    bool isBuying = false;
     unsigned short actionInDays = 0; // Trade over these days.
     unsigned amountToTrade = 0; // REMOVE
 
@@ -44,6 +43,9 @@ public:
     void Sell();
     void SellMax();
     void BuyMax();
+
     int GetAssetOwned();
+    int GetMaxPurchase();
+    bool CanAfford(int price);
 };
 

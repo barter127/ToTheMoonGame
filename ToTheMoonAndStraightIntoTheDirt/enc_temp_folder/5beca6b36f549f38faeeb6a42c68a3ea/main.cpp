@@ -349,7 +349,7 @@ void NextDay()
     UpdateMarket(marketGraph);
     DrawGraph(marketGraph);
 
-    //investorThread = true;
+    investorThread = true;
 
     std::cout << "> Current price: " << assetPrice << "\n";
     std::cout << "> Money: " << money << "\n";
