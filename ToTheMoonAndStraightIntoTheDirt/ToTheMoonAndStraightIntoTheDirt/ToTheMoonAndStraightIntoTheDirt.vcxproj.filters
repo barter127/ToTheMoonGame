@@ -14,7 +14,7 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Investor.cpp">
+    <ClCompile Include="Fail_Investor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Start+End.cpp">
@@ -31,7 +31,7 @@
     <ClInclude Include="Start+End.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Investor.h">
+    <ClInclude Include="Fail_Investor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Graph.h">

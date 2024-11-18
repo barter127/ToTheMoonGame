@@ -1,18 +1,17 @@
 #include "Graph.h"
 #include <iostream>
+#include <string>
+#include <sstream>
 
-void EraseGraph()
+std::ostringstream buffer;
+
+void DrawGraphBuffer()
 {
-    printf("\033[%d;%dH", 1, 1);
+    std::string bufferString = buffer.str();
+    std::cout << bufferString;
 
-    // +1 for current price line
-    int graphHeight = (GRAPH_TOP / Money_Multiplier) + 1;
-
-    for (int i = 0; i < graphHeight; i++)
-    {
-        printf("\x1b[2K");
-        std::cout << "\n";
-    }
+    buffer.str("");
+    buffer.clear();
 }
 
 void DrawYAxisLabel(int graphHeight)
@@ -21,12 +20,12 @@ void DrawYAxisLabel(int graphHeight)
     if ((graphHeight * 2) % 5 == 0)
     {
         // Display graph numbers.
-        std::cout << graphHeight * 2 << "-";
+        buffer << graphHeight * 2 << "-";
     }
-    else std::cout << "   ";
+    else buffer << "   ";
 
     // Draw seperator. 
-    std::cout << "|";
+    buffer << "|";
 }
 
 void DrawMarketTrend(short fluctuation)
@@ -34,26 +33,25 @@ void DrawMarketTrend(short fluctuation)
     switch (fluctuation)
     {
         case 1:
-            std::cout << "/";
+            buffer << "/";
             break;
         case 0:
-            std::cout << "_";
+            buffer << "_";
             break;
         case -1:
-            std::cout << "\\";
+            buffer << "\\";
     }
 }
 
 void DrawWhiteSpace()
 {
-    std::cout << " ";
+    buffer << " ";
 }
 
 // I believe the trade off of having these not be inline is better than iostream in the header.
 void NewLine()
 {
-    // Printf supposed to be a lot quicker when just making a new line.
-    printf("\n");
+    buffer << "\n";
 }
 
 float RandomRange(int lowest, int highest)

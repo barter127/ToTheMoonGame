@@ -8,7 +8,6 @@
 
 #include "inputvalidation.h"
 #include "Start+End.h"
-#include "Investor.h"
 #include "Graph.h"
 
 const int ASSET_MAX_AMOUNT = 1'000'000; // A mil
@@ -22,26 +21,13 @@ int lastGraphChange = 0;
 int lastGraphHeight = 12;
 const int GRAPH_TOP = 25;
 const int GRAPH_BOTTOM = 1;
-const int Money_Multiplier = 2;
+int moneyMultiplier = 2;
 
 // Player statistics.
 double money = 1000; // Needs negative values for possible debt mechanic.
 unsigned int assetOwned = 0;
 float assetPrice = 25.0;
 unsigned int day = 1; // Maybe problematic for long play sessions.
-
-
-void UpdateForecast();
-bool marketTrendingUp = true;
-int marketTrendForecast = 5; // How long the market will continue to trend this way.
-
-int investorsBuying = 0;
-int investorsSelling = 0;
-
-// If size is increased move to stack.
-Investor investorArr[100];
-
-void InvestorDecision(Investor& investor);
 
 void NextDay();
 inline void SetSeed();
@@ -95,31 +81,6 @@ void Timer()
     }
 }
 
-static bool investorThread = true;
-void InvestorThread()
-{
-    // Could be concerning at a larger scale.
-    while (true)
-    {
-        if (investorThread)
-        {
-            // Reset vars
-            investorsBuying = 0;
-            investorsSelling = 0;
-
-
-            for (Investor& investor : investorArr)
-            {
-                InvestorDecision(investor);
-            }
-
-            UpdateForecast();
-
-            investorThread = false;
-        }
-    }
-}
-
 int main()
 {
     // Set console colour. BG: Black, Text: Green
@@ -131,25 +92,20 @@ int main()
     SetSeed();
 
     IntialiseGraph(marketGraph);
-    DrawGraph(marketGraph);
-    std::cout << "> Current price: " << assetPrice << "\n";
-    std::cout << "> Money: " << money << "\n" << "\n";
+    NextDay();
    
     // Start Threads.
     std::thread Countdown(Timer);
-    //std::thread MarketDecision(InvestorThread);
-
 
     // Game loop
     while (!endGame)
     {
         GetCommand();
-        std::cout << lastCommandOutput << "\n";
+        //std::cout << lastCommandOutput << "\n";
     }
 
     // Game end
     Countdown.join();
-    //MarketDecision.join();
 
     std::cout << "\n";
     PrintEndGameMessage();
@@ -345,110 +301,19 @@ void Exit()
 
 void NextDay()
 {
+    // Move cursor to top of the screen to make updates more seamless.
+    //std::cout << "\033[H";
+
+
     system("cls");
     UpdateMarket(marketGraph);
-    DrawGraph(marketGraph);
-
-    //investorThread = true;
+    BufferGraph(marketGraph);
+    DrawGraphBuffer();
 
     std::cout << "> Current price: " << assetPrice << "\n";
     std::cout << "> Money: " << money << "\n";
     std::cout << lastCommandOutput << "\n";
-}
-
-/* Simulate investor decisions by comparing investor stats
-* is abitrary in some places but generally does simulate investor decisions enough to be immersive and add strategy
-* 
-* I'm not fully happy with the implementation of the AI but time constraints make it hard to improve :( 
-* THIS TOOK FUCKING AGES!!!!!*/
-void InvestorDecision(Investor& investor)
-{
-    // Profit if sold now
-    float currentProfit = (assetPrice * investor.GetAssetOwned()) - investor.assetBoughtPrice;
-
-    // Likelihood of selling.
-    int sellWeight = 0;
-    int foresight = marketTrendForecast * ((float)investor.knowledge / 5);
-
-    // If decision is already made perform decision.
-    if (investor.actionInDays > 0)
-    {
-
-        if (investor.GetAssetOwned() > 0)
-        {
-            investor.Buy();
-            investorsBuying++;
-
-            return;
-        }
-
-        else
-        {
-            investor.Sell();
-            investorsSelling++;
-
-            return;
-        }
-
-        return;
-    }
-
-    // Buy at predicted market low.
-    if (!marketTrendingUp && foresight >= marketTrendForecast && investor.CanAfford(assetPrice))
-    {
-        investor.actionInDays = marketTrendForecast;
-        investor.amountToTrade = investor.GetMaxPurchase() - (rand() % investor.GetMaxPurchase());
-
-        investor.Buy();
-        investorsBuying++;
-    }
-
-
-    // Can only buy
-    if (investor.GetAssetOwned() <= 0) return;
-
-
-    // Predict market peak. Sell most at peak.
-    if (marketTrendingUp && foresight >= marketTrendForecast)
-    {
-        // If profit is high enough start selling.
-        float gamblerMultiplier = (float) investor.gambler / 5.0f;
-        if (currentProfit >= investor.assetBoughtPrice * gamblerMultiplier)
-        {
-            investor.actionInDays = marketTrendForecast;
-            investor.amountToTrade = investor.GetAssetOwned();
-
-            investor.Sell();
-            investorsSelling++;
-        }
-
-        // Otherwise it will be held.
-    }
-
-    // Investor cannot see the fall. Sell late
-    else if (!marketTrendingUp && foresight <= marketTrendForecast)
-    {
-        if (currentProfit > investor.assetBoughtPrice)
-        {
-            investor.actionInDays = marketTrendForecast;
-            investor.amountToTrade = investor.GetAssetOwned();
-
-            investor.Sell();
-            investorsSelling++;
-        }
-    }
-}
-
-void UpdateForecast()
-{
-    marketTrendForecast = (investorsBuying - investorsSelling) / 10;
-
-    if (marketTrendForecast <= 0)
-    {
-        marketTrendingUp = !marketTrendingUp;
-        marketTrendForecast = abs(marketTrendForecast);
-    }
-    else marketTrendForecast--;
+    //"\033[2K"
 }
 
 inline void SetSeed()

@@ -6,10 +6,13 @@ extern int lastGraphChange;
 extern int lastGraphHeight; 
 extern const int GRAPH_TOP; 
 extern const int GRAPH_BOTTOM; 
-extern const int Money_Multiplier;
+extern int moneyMultiplier;
 
 // from main
 extern float assetPrice;
+
+// Prints graph data all at once. Allows for more seamless visual updates.
+void DrawGraphBuffer();
 
 // Draws the vertical line and numerical values to the left of the graph.
 void DrawYAxisLabel(int graphHeight);
@@ -28,11 +31,8 @@ float RandomRange(int lowest, int highest);
 
 // Prints stock graph (parameter) to console.
 template <size_t rows, size_t cols>
-void DrawGraph(short(&marketGraph)[rows][cols])
+void BufferGraph(short(&marketGraph)[rows][cols])
 {
-    // Moves cursor to top.
-    //printf("\033[%d;%dH", 1, 1);
-
     // Loop for height.
     for (int gHeight = GRAPH_TOP; gHeight > 0; gHeight--)
     {
@@ -69,8 +69,8 @@ void UpdateMarket(short(&marketGraph)[rows][cols])
     }
 
     // Limit price. Limiting from a game POV but text based really limits things.
-    int lowest = (assetPrice <= GRAPH_BOTTOM + 3) ? 0 : -2;
-    int highest = (assetPrice >= GRAPH_TOP * Money_Multiplier) ? 0 : 2;
+    int lowest = (assetPrice <= GRAPH_BOTTOM + 3.5f) ? 0 : -2;
+    int highest = (assetPrice >= GRAPH_TOP * moneyMultiplier) ? 0 : 2;
 
     float fluctuation = RandomRange(lowest, highest);
 
@@ -86,7 +86,7 @@ void UpdateMarket(short(&marketGraph)[rows][cols])
 
     assetPrice += fluctuation;
 
-    int graphHeight = assetPrice / Money_Multiplier;
+    int graphHeight = assetPrice / moneyMultiplier;
     marketGraph[rows - 1][0] = graphHeight;
 
 
