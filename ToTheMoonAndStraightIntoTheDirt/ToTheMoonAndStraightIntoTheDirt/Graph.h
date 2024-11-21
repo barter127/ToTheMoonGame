@@ -23,9 +23,12 @@ void DrawMarketTrend(short fluctuation);
 // literally just prints a space. Used to avoid iostream in a header.
 void DrawWhiteSpace();
 
-void NewLine();
+void NewLine(); // Might be a bit excessive.
 
 float RandomRange(int lowest, int highest);
+
+// Var between 0 and Hi is weight times more likely
+float WeightedRNG(int Lo, int Hi, int weight);
 
 
 

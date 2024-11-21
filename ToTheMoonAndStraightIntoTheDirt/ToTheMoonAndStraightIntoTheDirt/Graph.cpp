@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <vector>
 
 std::ostringstream buffer;
 
@@ -17,7 +18,9 @@ void DrawGraphBuffer()
 void DrawYAxisLabel(int graphHeight)
 {
     // Draw
-    if ((graphHeight * 2) % 5 == 0)
+    int coordMarker = graphHeight * moneyMultiplier;
+    int markerFrequency = 5 * moneyMultiplier;
+    if (coordMarker % markerFrequency == 0)
     {
         // Display graph numbers.
         buffer << graphHeight * 2 << "-";
@@ -54,8 +57,54 @@ void NewLine()
     buffer << "\n";
 }
 
+// If used more create overloads/templates
 float RandomRange(int lowest, int highest)
 {
     int range = (highest - lowest) + 1;
     return (rand() % range) + lowest; // Problematic if lowest is >0. 
+}
+
+int amount = 0;
+
+float WeightedRNG(int Lo, int Hi, int weight)
+{
+    // randomise Hi or Lo 
+
+    std::vector<int> rngResults;
+    rngResults.reserve(5);
+
+    if (weight > 0)
+    {
+        for (int i = 0; i < weight; i++)
+        {
+            int hiResult = RandomRange(0, Hi);
+            rngResults.push_back(hiResult);
+        }
+
+        int loResult = RandomRange(Lo, 0);
+        rngResults.push_back(loResult);
+    }
+    else if (weight < 0)
+    {
+        for (int i = 0; i < weight; i++)
+        {
+            int loResult = RandomRange(0, Lo);
+            rngResults.push_back(loResult);
+        }
+
+        int hiResult = RandomRange(Hi, 0);
+        rngResults.push_back(hiResult);
+    }
+    
+    int randIndex = rand() % weight + 1;
+
+    if (rngResults[randIndex] < 0)
+    {
+        std::cout << amount;
+        exit(0);
+    }
+    
+    amount++;
+
+    return rngResults[randIndex];
 }

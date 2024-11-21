@@ -134,7 +134,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Graph.h" />
-    <ClInclude Include="inputvalidation.h" />
+    <ClInclude Include="Inputvalidation.h" />
     <ClInclude Include="Fail_Investor.h" />
     <ClInclude Include="Start+End.h" />
   </ItemGroup>
