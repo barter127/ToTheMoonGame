@@ -75,7 +75,7 @@ void Timer()
 
     while (timerOn)
     {
-        std::this_thread::sleep_for(3s);
+        std::this_thread::sleep_for(5s);
 
         NextDay();
     }
@@ -301,11 +301,9 @@ void Exit()
 
 void NextDay()
 {
-    // Move cursor to top of the screen to make updates more seamless.
-    //std::cout << "\033[H";
+    // Clear console.
+    system("cls"); // Not clearing looks more seamless but I prefer this over scrolling through console.
 
-
-    system("cls");
     UpdateMarket(marketGraph);
     BufferGraph(marketGraph);
     DrawGraphBuffer();
@@ -313,7 +311,6 @@ void NextDay()
     std::cout << "> Current price: " << assetPrice << "\n";
     std::cout << "> Money: " << money << "\n";
     std::cout << lastCommandOutput << "\n";
-    //"\033[2K"
 }
 
 inline void SetSeed()
