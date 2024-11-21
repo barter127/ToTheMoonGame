@@ -25,7 +25,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="inputvalidation.h">
+    <ClInclude Include="Inputvalidation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Start+End.h">

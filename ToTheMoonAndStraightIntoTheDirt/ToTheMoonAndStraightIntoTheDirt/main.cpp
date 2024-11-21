@@ -6,7 +6,7 @@
 #include <map>
 #include <functional>
 
-#include "inputvalidation.h"
+#include "Inputvalidation.h"
 #include "Start+End.h"
 #include "Graph.h"
 
@@ -28,6 +28,9 @@ double money = 1000; // Needs negative values for possible debt mechanic.
 unsigned int assetOwned = 0;
 float assetPrice = 25.0;
 unsigned int day = 1; // Maybe problematic for long play sessions.
+
+// RNG
+int rngWeight = 0;
 
 void NextDay();
 inline void SetSeed();
@@ -75,14 +78,17 @@ void Timer()
 
     while (timerOn)
     {
-        std::this_thread::sleep_for(5s);
+        std::this_thread::sleep_for(1s);
 
         NextDay();
+        std::cout << WeightedRNG(-10, 10, 5);
     }
 }
 
 int main()
 {
+    
+
     // Set console colour. BG: Black, Text: Green
     system("Color 0A");
 
