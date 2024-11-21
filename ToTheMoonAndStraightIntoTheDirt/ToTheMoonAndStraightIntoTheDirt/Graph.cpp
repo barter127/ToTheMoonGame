@@ -68,30 +68,32 @@ int amount = 0;
 
 float WeightedRNG(int Lo, int Hi, int weight)
 {
-    // randomise Hi or Lo 
-
     std::vector<int> rngResults;
     rngResults.reserve(5);
 
     if (weight > 0)
     {
+        // Randomise 0 to Hi. Weight amount of times.
         for (int i = 0; i < weight; i++)
         {
             int hiResult = RandomRange(0, Hi);
             rngResults.push_back(hiResult);
         }
 
+        // Include Lo result
         int loResult = RandomRange(Lo, 0);
         rngResults.push_back(loResult);
     }
     else if (weight < 0)
     {
+        // Randomise Lo to 0. Weight amount of times.
         for (int i = 0; i < weight; i++)
         {
             int loResult = RandomRange(0, Lo);
             rngResults.push_back(loResult);
         }
 
+        // Include Hi result.
         int hiResult = RandomRange(Hi, 0);
         rngResults.push_back(hiResult);
     }

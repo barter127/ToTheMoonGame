@@ -27,7 +27,7 @@ void NewLine(); // Might be a bit excessive.
 
 float RandomRange(int lowest, int highest);
 
-// Var between 0 and Hi is weight times more likely
+// Var between (0 and Hi) or (Lo and 0) is weight times more likely
 float WeightedRNG(int Lo, int Hi, int weight);
 
 
@@ -96,7 +96,7 @@ void UpdateMarket(short(&marketGraph)[rows][cols])
     int graphChange = graphHeight - lastGraphHeight;
     marketGraph[rows - 1][1] = graphChange;
 
-    // Check to align graph lines.
+    // Check to align graph lines (quirk of text based).
     if ((lastGraphChange == -1 || lastGraphChange == 0) && graphChange == 1)
     {
         marketGraph[rows - 1][0] = graphHeight - 1;
