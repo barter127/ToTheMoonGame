@@ -76,24 +76,21 @@ void Timer()
 
     timerOn = true;
 
-    while (timerOn)
+    while (timerOn) // Having it sleep causes delay on exit.
     {
-        std::this_thread::sleep_for(1s);
+        std::this_thread::sleep_for(3s);
 
         NextDay();
-        std::cout << WeightedRNG(-10, 10, 5);
     }
 }
 
 int main()
 {
-    
-
     // Set console colour. BG: Black, Text: Green
     system("Color 0A");
 
     //PLEASE PLEASE PLEASE PLEASE PLEASE PLEASE PLEASE PLEASE DON'T FORGET TO UNCOMMENT THIS
-    // DisplayTitle();
+    //DisplayTitle();
 
     SetSeed();
 
@@ -107,12 +104,13 @@ int main()
     while (!endGame)
     {
         GetCommand();
-        //std::cout << lastCommandOutput << "\n";
+        std::cout << lastCommandOutput << "\n";
     }
 
     // Game end
     Countdown.join();
 
+    PrintEndStats();
     std::cout << "\n";
     PrintEndGameMessage();
 }
@@ -223,7 +221,6 @@ varType GetParameter(std::string commandLine, typename varType, int parmIndex)
 void Buy()
 {
     int amountToBuy = GetParameter(commandInput, 0, 1);
-
     float cost = amountToBuy * assetPrice;
 
     // If invalid input print proper error msg.
@@ -235,6 +232,7 @@ void Buy()
     {
         money -= cost;
         assetOwned += amountToBuy;
+        UpdateEndStats(cost, amountToBuy);
 
         // Output feedback and save output for when console clears.
         std::ostringstream buffer;
@@ -249,8 +247,7 @@ void Buy()
 void Sell()
 {
     int amountToSell = GetParameter(commandInput, 0, 1);
-
-    float sellPrice = 0;
+    float sellPrice = amountToSell * assetPrice; // Calc price of sale.
 
     // If invalid print proper error msg.
     if ((assetOwned - amountToSell) < 0) std::cerr << "[!] Err. You're trying to sell more than you own!" << "\n";
@@ -259,8 +256,8 @@ void Sell()
     else // If Valid input (selling an amount they own and selling at least 1)
     {
         assetOwned -= amountToSell;
-        sellPrice = amountToSell * assetPrice; // Calc price of sale.
         money += sellPrice;
+        UpdateEndStats(sellPrice, amountToSell);
 
         // Output feedback and save output for when console clears.
         std::ostringstream buffer;
@@ -300,6 +297,11 @@ void Share()
 void Exit()
 {
     endGame = true;
+    timerOn = false;
+
+    std::ostringstream buffer;
+    buffer << "> Exiting game";
+    lastCommandOutput = buffer.str();
 }
 
 
