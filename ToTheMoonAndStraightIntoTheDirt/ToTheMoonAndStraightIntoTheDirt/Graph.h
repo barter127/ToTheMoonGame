@@ -59,10 +59,9 @@ void BufferGraph(short(&marketGraph)[rows][cols])
     }
 }
 
-// Updates the markertArray so the last element of the array is new
-// Shifts the rest of the array left and discards the first value.
+// Shifts the array left and discards the first value.
 template <size_t rows, size_t cols>
-void UpdateMarket(short(&marketGraph)[rows][cols])
+void ShiftGraphArray(short (&marketGraph)[rows][cols])
 {
     // Move all fields over by one.
     for (int i = 0; i < rows - 1; i++) // Loop 1 less than length.
@@ -70,6 +69,25 @@ void UpdateMarket(short(&marketGraph)[rows][cols])
         marketGraph[i][0] = marketGraph[i + 1][0];
         marketGraph[i][1] = marketGraph[i + 1][1];
     }
+}
+
+int AlignFluctuation(int graphChange, int graphHeight)
+{
+    // Check to align graph lines (quirk of text based).
+    if ((lastGraphChange == -1 || lastGraphChange == 0) && graphChange == 1)
+    {
+        return graphHeight - 1;
+    }
+ 
+    return graphHeight;
+}
+
+// Updates the markertArray so the last element of the array is new
+// Shifts the rest of the array left and discards the first value.
+template <size_t rows, size_t cols>
+void UpdateMarket(short(&marketGraph)[rows][cols])
+{
+    ShiftGraphArray(marketGraph);
 
     // Limit price. Limiting from a game POV but text based really limits things.
     int lowest = (assetPrice <= GRAPH_BOTTOM + 3.5f) ? 0 : -2;
@@ -96,15 +114,8 @@ void UpdateMarket(short(&marketGraph)[rows][cols])
     int graphChange = graphHeight - lastGraphHeight;
     marketGraph[rows - 1][1] = graphChange;
 
-    // Check to align graph lines (quirk of text based).
-    if ((lastGraphChange == -1 || lastGraphChange == 0) && graphChange == 1)
-    {
-        marketGraph[rows - 1][0] = graphHeight - 1;
-    }
-    else
-    {
-        marketGraph[rows - 1][0] = graphHeight;
-    }
+    // Fixes alignment quirk with ascii.
+    marketGraph[rows - 1][0] = AlignFluctuation(graphChange, graphHeight);
 
     lastGraphHeight = graphHeight;
 }
