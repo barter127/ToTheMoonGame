@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 // Graph drawing.
 extern float lastPrice; 
 extern int lastGraphChange;
@@ -25,6 +27,10 @@ void DrawWhiteSpace();
 
 void NewLine(); // Might be a bit excessive.
 
+void DrawVerticalLine();
+
+int AlignFluctuation(int graphChange, int graphHeight);
+
 float RandomRange(int lowest, int highest);
 
 // Var between (0 and Hi) or (Lo and 0) is weight times more likely
@@ -36,6 +42,10 @@ float WeightedRNG(int Lo, int Hi, int weight);
 template <size_t rows, size_t cols>
 void BufferGraph(short(&marketGraph)[rows][cols])
 {
+    // Arbitrarily large number.
+    std::vector<int> verticalLineH;
+    std::vector<int> verticalLineW;
+
     // Loop for height.
     for (int gHeight = GRAPH_TOP; gHeight > 0; gHeight--)
     {
@@ -45,9 +55,32 @@ void BufferGraph(short(&marketGraph)[rows][cols])
         // Loop for graph width.
         for (int gWidth = 0; gWidth < rows; gWidth++)
         {
-            // If there isn't a value at this position.
-            if (gHeight != marketGraph[gWidth][0]) DrawWhiteSpace();
+            std::vector<int>::iterator  it = find(verticalLineW.begin(), verticalLineW.end(), gWidth);
+            if ((marketGraph[gWidth][1] > 1 || marketGraph[gWidth][1] < -1) && marketGraph[gWidth][0] == gHeight && it == verticalLineW.end())
+            {
+                verticalLineW.push_back(gWidth);
+                verticalLineH.push_back(marketGraph[gWidth][1]);
+            }
+            it = find(verticalLineW.begin(), verticalLineW.end(), gWidth);
+            int linePos = std::distance(verticalLineW.begin(), it);
+            if (it != verticalLineW.end() && verticalLineH[linePos] != 0)
+            {
+                DrawVerticalLine();
 
+                if (verticalLineH[linePos] > 0)
+                {
+                    verticalLineH[linePos]--;
+                }
+                else
+                {
+                    verticalLineH[linePos]++;
+                }
+            }
+
+            // If there isn't a value at this position.
+            else if (gHeight != marketGraph[gWidth][0]) DrawWhiteSpace();
+
+            // Maybe a bit too nested but makes if statements readable.
             else
             {
                 // Draw corresponding output.
@@ -71,17 +104,6 @@ void ShiftGraphArray(short (&marketGraph)[rows][cols])
     }
 }
 
-int AlignFluctuation(int graphChange, int graphHeight)
-{
-    // Check to align graph lines (quirk of text based).
-    if ((lastGraphChange == -1 || lastGraphChange == 0) && graphChange == 1)
-    {
-        return graphHeight - 1;
-    }
- 
-    return graphHeight;
-}
-
 // Updates the markertArray so the last element of the array is new
 // Shifts the rest of the array left and discards the first value.
 template <size_t rows, size_t cols>
@@ -90,8 +112,8 @@ void UpdateMarket(short(&marketGraph)[rows][cols])
     ShiftGraphArray(marketGraph);
 
     // Limit price. Limiting from a game POV but text based really limits things.
-    int lowest = (assetPrice <= GRAPH_BOTTOM + 3.5f) ? 0 : -2;
-    int highest = (assetPrice >= GRAPH_TOP * moneyMultiplier) ? 0 : 2;
+    int lowest = (assetPrice <= GRAPH_BOTTOM + 3.5f) ? 0 : -4;
+    int highest = (assetPrice >= GRAPH_TOP * moneyMultiplier) ? 0 : 4;
 
     float fluctuation = RandomRange(lowest, highest);
 

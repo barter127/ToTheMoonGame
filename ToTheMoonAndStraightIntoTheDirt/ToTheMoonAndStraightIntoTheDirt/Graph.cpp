@@ -51,10 +51,26 @@ void DrawWhiteSpace()
     buffer << " ";
 }
 
+void DrawVerticalLine()
+{
+    buffer << "|";
+}
+
 // I believe the trade off of having these not be inline is better than iostream in the header.
 void NewLine()
 {
     buffer << "\n";
+}
+
+int AlignFluctuation(int graphChange, int graphHeight)
+{
+    // Check to align graph lines (quirk of text based).
+    if ((lastGraphChange == -1 || lastGraphChange == 0) && graphChange == 1)
+    {
+        return graphHeight - 1;
+    }
+
+    return graphHeight;
 }
 
 // If used more create overloads/templates
