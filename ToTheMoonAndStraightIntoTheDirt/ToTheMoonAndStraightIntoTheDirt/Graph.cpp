@@ -66,9 +66,9 @@ int AlignFluctuation(int graphChange, int graphHeight)
 {
     // Check to align graph lines (quirk of text based).
     if ((lastGraphChange == -1 || lastGraphChange == 0) && graphChange == 1)
+    {
         return graphHeight - 1;
-    else if (lastGraphChange > 1 && graphChange < 1)
-        return ++graphHeight;
+    }
 
     return graphHeight;
 }

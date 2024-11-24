@@ -130,6 +130,8 @@ void UpdateMarket(short(&marketGraph)[rows][cols])
     assetPrice += fluctuation;
 
     int graphHeight = assetPrice / moneyMultiplier;
+    marketGraph[rows - 1][0] = graphHeight;
+
 
     int graphChange = graphHeight - lastGraphHeight;
     marketGraph[rows - 1][1] = graphChange;
@@ -138,7 +140,6 @@ void UpdateMarket(short(&marketGraph)[rows][cols])
     marketGraph[rows - 1][0] = AlignFluctuation(graphChange, graphHeight);
 
     lastGraphHeight = graphHeight;
-    lastGraphChange = graphChange;
 }
 
 // Initalise Graph by running update market for the amount of rows

@@ -92,7 +92,7 @@ int main()
     //PLEASE PLEASE PLEASE PLEASE PLEASE PLEASE PLEASE PLEASE DON'T FORGET TO UNCOMMENT THIS
     //DisplayTitle();
 
-    //SetSeed();
+    SetSeed();
 
     IntialiseGraph(marketGraph);
     NextDay();
