@@ -6,6 +6,14 @@
 
 std::ostringstream buffer;
 
+// Graph vars.
+float lastPrice = 12;
+int lastGraphChange = 0;
+int lastGraphHeight = 12;
+const int GRAPH_TOP = 25;
+const int GRAPH_BOTTOM = 1;
+int moneyMultiplier = 2;
+
 void DrawGraphBuffer()
 {
     std::string bufferString = buffer.str();
