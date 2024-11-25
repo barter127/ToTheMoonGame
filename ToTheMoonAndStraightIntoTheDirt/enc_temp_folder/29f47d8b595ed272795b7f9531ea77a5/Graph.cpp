@@ -130,6 +130,8 @@ float RandomiseFluctuation(int &weight)
     else if (fluctuation <= -2) weight--;
     else if (weight > 0) weight--;
     else if (weight < 0) weight++;
+    //else if (weight > 0 && fluctuation < 0) weight = 0;
+    //else weight = 0;
 
     // If decimal and int fluctuation are randomised using the same float it makes the overall graph line too centred
     //The addition of decimals is important for immersion and player fantasy of actually being a broker.

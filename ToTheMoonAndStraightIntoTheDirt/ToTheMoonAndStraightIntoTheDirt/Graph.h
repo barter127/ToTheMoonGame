@@ -2,11 +2,12 @@
 
 // Graph drawing.
 extern float lastPrice; 
-extern int lastGraphChange;
 extern int lastGraphHeight; 
 extern const int GRAPH_TOP; 
 extern const int GRAPH_BOTTOM; 
 extern int moneyMultiplier;
+
+extern int rngWeight;
 
 // from main
 extern float assetPrice;
@@ -27,7 +28,7 @@ void DrawWhiteSpace();
 void NewLine(); // Might be a bit excessive.
 
 // Random number between
-float RandomiseFluctuation();
+float RandomiseFluctuation(int &weight);
 
 float RandomRange(int lowest, int highest);
 
@@ -81,7 +82,7 @@ void UpdateMarket(short (&marketGraph)[rows][cols])
 {
     ShiftMarketArray(marketGraph);
 
-    float fluctuation = RandomiseFluctuation();
+    float fluctuation = RandomiseFluctuation(rngWeight);
     assetPrice += fluctuation;
 
     int graphHeight = assetPrice / moneyMultiplier;
@@ -98,6 +99,7 @@ void UpdateMarket(short (&marketGraph)[rows][cols])
         marketGraph[rows - 1][0] = graphHeight;
     }
 
+    // MAYBE IMPLEMENT PROPERLY
     //if (assetPrice > GRAPH_TOP * moneyMultiplier)
     //{
     //    moneyMultiplier *= 2;
@@ -109,7 +111,6 @@ void UpdateMarket(short (&marketGraph)[rows][cols])
 
 
     lastGraphHeight = graphHeight;
-    lastGraphChange = graphChange;
 }
 
 // Initalise Graph by running update market for the amount of rows
