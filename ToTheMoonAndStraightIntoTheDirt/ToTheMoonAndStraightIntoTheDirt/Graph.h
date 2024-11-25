@@ -51,19 +51,23 @@ void BufferGraph(short(&marketGraph)[rows][cols])
         // Loop for graph width.
         for (int gWidth = 0; gWidth < rows; gWidth++)
         {
+            // Fluctuation is greater than abs(1) AND height is same
             if ((marketGraph[gWidth][1] > 1 || marketGraph[gWidth][1] < -1) && marketGraph[gWidth][0] == gHeight)
             {
+                // If not in map.
                 if (verticalLines.find(gWidth) == verticalLines.end()) 
                 {
                     verticalLines[gWidth] = marketGraph[gWidth][1];
                 }
             }
 
+            // If found in map.
             std::map<int, int>::iterator it = verticalLines.find(gWidth);
             if (it != verticalLines.end() && it->second != 0)
             {
                 DrawVerticalLine();
 
+                // Move difference closer to 0.
                 if (it->second > 0) 
                 {
                     it->second--;
