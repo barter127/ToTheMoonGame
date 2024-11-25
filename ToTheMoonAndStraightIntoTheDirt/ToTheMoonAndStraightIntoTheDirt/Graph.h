@@ -75,7 +75,7 @@ void BufferGraph(short(&marketGraph)[rows][cols])
             }
 
             // If there isn't a value at this position.
-            if (gHeight != marketGraph[gWidth][0]) DrawWhiteSpace();
+            else if (gHeight != marketGraph[gWidth][0]) DrawWhiteSpace();
 
             else
             {
