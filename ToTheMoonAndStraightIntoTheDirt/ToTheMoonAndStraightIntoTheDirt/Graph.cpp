@@ -31,7 +31,7 @@ void DrawYAxisLabel(int graphHeight)
     if (coordMarker % markerFrequency == 0)
     {
         // Display graph numbers.
-        buffer << graphHeight * 2 << "-";
+        buffer << graphHeight * moneyMultiplier << "-";
     }
     else buffer << "   ";
 
@@ -121,9 +121,9 @@ float WeightedRNG(int Lo, int Hi, int weight)
 
 float RandomiseFluctuation()
 {
-    // Limit price. Limiting from a game POV but text based really limits things.
+    // Limit price from falling below 0;
     int lowest = (assetPrice <= GRAPH_BOTTOM + 3.5f) ? 0 : -2;
-    int highest = 2;
+    int highest = (assetPrice >= GRAPH_TOP * moneyMultiplier) ? 0 : 2;
 
     float fluctuation = RandomRange(lowest, highest);
 

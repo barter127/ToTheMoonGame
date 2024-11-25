@@ -19,6 +19,10 @@ inline void SetSeed();
 
 static bool timerOn = true; 
 
+// Dow Theory.
+// Event system.
+// Switch Graph
+// Vertical increase (Prolly not)
 
 int main()
 {

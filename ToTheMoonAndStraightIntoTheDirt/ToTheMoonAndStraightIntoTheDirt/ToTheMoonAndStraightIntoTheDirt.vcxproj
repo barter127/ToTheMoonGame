@@ -128,6 +128,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Commands.cpp" />
+    <ClCompile Include="Events.cpp" />
     <ClCompile Include="Graph.cpp" />
     <ClCompile Include="Fail_Investor.cpp" />
     <ClCompile Include="InputValidation.cpp" />
@@ -136,6 +137,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Commands.h" />
+    <ClInclude Include="Events.h" />
     <ClInclude Include="Graph.h" />
     <ClInclude Include="Inputvalidation.h" />
     <ClInclude Include="Fail_Investor.h" />
