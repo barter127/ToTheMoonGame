@@ -1,5 +1,7 @@
 #pragma once
 
+#include<map>
+
 // Graph drawing.
 extern float lastPrice; 
 extern int lastGraphChange;
@@ -23,6 +25,8 @@ void DrawMarketTrend(short fluctuation);
 // literally just prints a space. Used to avoid iostream in a header.
 void DrawWhiteSpace();
 
+void DrawVerticalLine();
+
 void NewLine(); // Might be a bit excessive.
 
 float RandomRange(int lowest, int highest);
@@ -36,6 +40,8 @@ float WeightedRNG(int Lo, int Hi, int weight);
 template <size_t rows, size_t cols>
 void BufferGraph(short(&marketGraph)[rows][cols])
 {
+    std::map<int, int> verticalLines;
+
     // Loop for height.
     for (int gHeight = GRAPH_TOP; gHeight > 0; gHeight--)
     {
@@ -45,6 +51,29 @@ void BufferGraph(short(&marketGraph)[rows][cols])
         // Loop for graph width.
         for (int gWidth = 0; gWidth < rows; gWidth++)
         {
+            if ((marketGraph[gWidth][1] > 1 || marketGraph[gWidth][1] < -1) && marketGraph[gWidth][0] == gHeight)
+            {
+                if (verticalLines.find(gWidth) == verticalLines.end()) 
+                {
+                    verticalLines[gWidth] = marketGraph[gWidth][1];
+                }
+            }
+
+            std::map<int, int>::iterator it = verticalLines.find(gWidth);
+            if (it != verticalLines.end() && it->second != 0)
+            {
+                DrawVerticalLine();
+
+                if (it->second > 0) 
+                {
+                    it->second--;
+                }
+                else if (it->second < 0)
+                {
+                    it->second++;
+                }
+            }
+
             // If there isn't a value at this position.
             if (gHeight != marketGraph[gWidth][0]) DrawWhiteSpace();
 
@@ -72,8 +101,8 @@ void UpdateMarket(short(&marketGraph)[rows][cols])
     }
 
     // Limit price. Limiting from a game POV but text based really limits things.
-    int lowest = (assetPrice <= GRAPH_BOTTOM + 3.5f) ? 0 : -2;
-    int highest = (assetPrice >= GRAPH_TOP * moneyMultiplier) ? 0 : 2;
+    int lowest = (assetPrice <= GRAPH_BOTTOM + 3.5f) ? 0 : -4;
+    int highest = (assetPrice >= GRAPH_TOP * moneyMultiplier) ? 0 : 4;
 
     float fluctuation = RandomRange(lowest, highest);
 

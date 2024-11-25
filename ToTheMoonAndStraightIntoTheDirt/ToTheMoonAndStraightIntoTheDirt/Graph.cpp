@@ -51,6 +51,11 @@ void DrawWhiteSpace()
     buffer << " ";
 }
 
+void DrawVerticalLine()
+{
+    buffer << "|";
+}
+
 // I believe the trade off of having these not be inline is better than iostream in the header.
 void NewLine()
 {
