@@ -1,3 +1,4 @@
 #pragma once
 
-void GiveMoney();
+void EventGiveMoney();
+void EventLoseMoney();
