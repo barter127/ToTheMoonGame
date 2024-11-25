@@ -97,7 +97,7 @@ void UpdateMarket(short(&marketGraph)[rows][cols])
     marketGraph[rows - 1][1] = graphChange;
 
     // Check to align graph lines (quirk of text based).
-    if ((lastGraphChange == -1 || lastGraphChange == 0) && graphChange == 1)
+    if ((lastGraphChange == -1 || lastGraphChange == 0 || lastGraphChange == 1) && graphChange == 1)
     {
         marketGraph[rows - 1][0] = graphHeight - 1;
     }
@@ -107,6 +107,7 @@ void UpdateMarket(short(&marketGraph)[rows][cols])
     }
 
     lastGraphHeight = graphHeight;
+    lastGraphChange = graphChange;
 }
 
 // Initalise Graph by running update market for the amount of rows
