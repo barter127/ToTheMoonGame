@@ -18,7 +18,7 @@ void DrawGraphBuffer();
 void DrawYAxisLabel(int graphHeight);
 
 // Check which symbol to draw depending if the market went up or down.
-void DrawMarketTrend(short fluctuation);
+void DrawGraphLine(short fluctuation);
 
 // literally just prints a space. Used to avoid iostream in a header.
 void DrawWhiteSpace();
@@ -55,7 +55,7 @@ void BufferGraph(short (&marketGraph)[rows][cols])
             else
             {
                 // Draw corresponding output.
-                DrawMarketTrend(marketGraph[gWidth][1]);
+                DrawGraphLine(marketGraph[gWidth][1]);
             }
         }
 
@@ -97,6 +97,16 @@ void UpdateMarket(short (&marketGraph)[rows][cols])
     {
         marketGraph[rows - 1][0] = graphHeight;
     }
+
+    //if (assetPrice > GRAPH_TOP * moneyMultiplier)
+    //{
+    //    moneyMultiplier *= 2;
+    //}
+    //else if (assetPrice > GRAPH_TOP * moneyMultiplier / 2)
+    //{
+    //    moneyMultiplier /= 2;
+    //}
+
 
     lastGraphHeight = graphHeight;
     lastGraphChange = graphChange;

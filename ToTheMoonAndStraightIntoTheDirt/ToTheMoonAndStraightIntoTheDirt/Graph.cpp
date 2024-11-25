@@ -39,7 +39,7 @@ void DrawYAxisLabel(int graphHeight)
     buffer << "|";
 }
 
-void DrawMarketTrend(short fluctuation)
+void DrawGraphLine(short fluctuation)
 {
     switch (fluctuation)
     {
@@ -123,7 +123,7 @@ float RandomiseFluctuation()
 {
     // Limit price. Limiting from a game POV but text based really limits things.
     int lowest = (assetPrice <= GRAPH_BOTTOM + 3.5f) ? 0 : -2;
-    int highest = (assetPrice >= GRAPH_TOP * moneyMultiplier) ? 0 : 2;
+    int highest = 2;
 
     float fluctuation = RandomRange(lowest, highest);
 
