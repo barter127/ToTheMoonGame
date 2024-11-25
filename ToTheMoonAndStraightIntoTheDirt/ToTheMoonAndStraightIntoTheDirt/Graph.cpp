@@ -15,6 +15,9 @@ const int GRAPH_BOTTOM = 1;
 int moneyMultiplier = 2;
 int rngWeight = 0;
 
+// Event.cpp
+extern bool inEvent;
+
 void DrawGraphBuffer()
 {
     std::string bufferString = buffer.str();
@@ -116,27 +119,36 @@ float WeightedRNG(int Lo, int Hi, int weight)
     return rngResults[randIndex];
 }
 
+int AdjustWeight(int fluctuation , int weight)
+{
+    if (!inEvent)
+    {
+        // Increasing stocks more likely to keep increasing and vice versa.
+        if (fluctuation >= 2) weight++;
+        else if (fluctuation <= -2) weight--;
+        else if (weight > 0) weight--;
+        else if (weight < 0) weight++;
+    }
+
+    return weight;
+}
+
 float RandomiseFluctuation(int &weight)
 {
     // Limit price from going out of graph bounds.
-    int lowest = (assetPrice <= 8) ? 0 : -2;
-    int highest = (assetPrice >= (GRAPH_TOP * moneyMultiplier)) ? 0 : 2;
+    int lowest = (assetPrice <= GRAPH_BOTTOM + 2) ? 0 : -2;
+    int highest = (assetPrice >= (GRAPH_TOP * moneyMultiplier) - 2) ? 0 : 2;
 
     float fluctuation = WeightedRNG(lowest, highest, weight);
 
-    // THIS COULD DO WITH TIDYING UP.
-    // Increasing stocks more likely to keep increasing and vice versa.
-    if (fluctuation >= 2) weight++;
-    else if (fluctuation <= -2) weight--;
-    else if (weight > 0) weight--;
-    else if (weight < 0) weight++;
+    weight = AdjustWeight(fluctuation, weight);
 
     // If decimal and int fluctuation are randomised using the same float it makes the overall graph line too centred
     //The addition of decimals is important for immersion and player fantasy of actually being a broker.
     lowest = (fluctuation <= -2) ? 0 : -100;
     highest = (fluctuation >= 2) ? 0 : 100;
 
-    float decimal = RandomRange(lowest, highest);
+    float decimal = WeightedRNG(lowest, highest, weight);
 
     // Combine both randomised numbers.
     fluctuation += (decimal / 100);

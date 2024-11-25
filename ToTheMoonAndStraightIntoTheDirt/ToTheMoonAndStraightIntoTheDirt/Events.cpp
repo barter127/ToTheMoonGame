@@ -9,11 +9,20 @@ extern unsigned int assetOwned;
 extern float assetPrice;
 extern unsigned int day;
 
+// Main.cpp
 extern bool timerOn;
 
-extern bool rngWeight;
+// Graph.cpp
+extern int rngWeight;
+
+bool inEvent = false;
+short eventDays = 0;
 
 // Event pre-fix so not misused.
+
+// randomised vars + output in window.
+// Better timer intermingeling.
+// Randomised Msgs.
 
 // Increase Money
 void EventGiveMoney()
@@ -74,5 +83,31 @@ void EventLoseAsset()
 }
 
 // Stocks will fall
+void EventMarketFall()
+{
+	timerOn = false;
+	std::wstring msg = L"THE MARKET WILL BE CRIPPLED >:D";
+
+	MessageBox(NULL, msg.c_str(), L"Event!", MB_OK);
+
+	inEvent = true;
+	eventDays = 10;
+	rngWeight = -10;
+
+	timerOn = true;
+}
 
 // Stocks will rise.
+void EventMarketRise()
+{
+	timerOn = false;
+	std::wstring msg = L"THE MARKET IS BOOMING! :D";
+
+	MessageBox(NULL, msg.c_str(), L"Event!", MB_OK);
+
+	inEvent = true;
+	eventDays = 10;
+	rngWeight = 10;
+
+	timerOn = true;
+}

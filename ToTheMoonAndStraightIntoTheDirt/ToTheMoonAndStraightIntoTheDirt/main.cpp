@@ -53,7 +53,7 @@ int main()
     // Start Threads.
     std::thread Countdown(Timer);
 
-    EventLoseMoney();
+    EventMarketRise();
 
     // Game loop
     while (!endGame)
@@ -71,6 +71,7 @@ int main()
 }
 
 // Is always active in some way.
+// Basically the beating heart of the program. It deserves to be in main.
 void Timer()
 {
     using namespace std::chrono_literals;
@@ -88,9 +89,11 @@ void Timer()
     }
 }
 
+// Update nessecary variables. Redraw graph.
 void NextDay()
 {
     day++;
+    UpdateEventDays();
 
     // Clear console.
     system("cls"); // Not clearing looks more seamless but I prefer this over scrolling through console.
@@ -104,6 +107,7 @@ void NextDay()
     std::cout << lastCommandOutput << "\n";
 }
 
+// Is this pointless? A bit, but the code inside is ugly. This adds clarity.
 inline void SetSeed()
 {
     srand(time(NULL));
