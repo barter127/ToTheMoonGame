@@ -1,4 +1,6 @@
 #include <chrono>
+#include <condition_variable>
+#include <mutex>
 #include <iostream>
 #include <thread>
 #include <string>
@@ -10,24 +12,32 @@
 #include "Graph.h"
 #include "Commands.h"
 
+#include "Events.h"
+
 // 480 bytes
 short marketGraph[116][2];
+
+// Player statistics.
+double money = 1000; // Needs negative values for possible debt mechanic.
+unsigned int assetOwned = 0;
+float assetPrice = 25.0;
+unsigned int day = 1; // Maybe problematic for long play sessions.
+
+bool timerOn = true; 
 
 void Timer();
 void NextDay();
 inline void SetSeed();
 
-static bool timerOn = true; 
-
-// Dow Theory.
 // Event system.
 // Switch Graph
 // Vertical increase (Prolly not)
 
+std::mutex m;
+std::condition_variable cv;
+
 int main()
 {
-    int rngWeight = 0;
-
     // Set console colour. BG: Black, Text: Green
     system("Color 0A");
 
@@ -41,6 +51,8 @@ int main()
    
     // Start Threads.
     std::thread Countdown(Timer);
+
+    GiveMoney();
 
     // Game loop
     while (!endGame)
@@ -57,22 +69,28 @@ int main()
     PrintEndGameMessage();
 }
 
+// Is always active in some way.
 void Timer()
 {
     using namespace std::chrono_literals;
 
-    timerOn = true;
-
-    while (timerOn) // Having it sleep causes delay on exit.
+    // PLEASE UPDATE THIS I WILL CRY.
+    while (true) // Having it sleep causes delay on exit.
     {
         std::this_thread::sleep_for(3s);
 
-        NextDay();
+        if (timerOn)
+        {
+            NextDay();
+        }
+
     }
 }
 
 void NextDay()
 {
+    day++;
+
     // Clear console.
     system("cls"); // Not clearing looks more seamless but I prefer this over scrolling through console.
 

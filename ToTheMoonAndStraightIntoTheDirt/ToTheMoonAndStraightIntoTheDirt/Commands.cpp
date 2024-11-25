@@ -7,12 +7,6 @@
 #include <map>
 #include <functional>
 
-// Player statistics.
-double money = 1000; // Needs negative values for possible debt mechanic.
-unsigned int assetOwned = 0;
-float assetPrice = 25.0;
-unsigned int day = 1; // Maybe problematic for long play sessions.
-
 const int ASSET_MAX_AMOUNT = 1'000'000;
 
 bool endGame;
