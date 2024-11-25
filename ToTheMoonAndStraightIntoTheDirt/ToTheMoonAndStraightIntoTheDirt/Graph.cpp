@@ -118,3 +118,24 @@ float WeightedRNG(int Lo, int Hi, int weight)
 
     return rngResults[randIndex];
 }
+
+float RandomiseFluctuation()
+{
+    // Limit price. Limiting from a game POV but text based really limits things.
+    int lowest = (assetPrice <= GRAPH_BOTTOM + 3.5f) ? 0 : -2;
+    int highest = (assetPrice >= GRAPH_TOP * moneyMultiplier) ? 0 : 2;
+
+    float fluctuation = RandomRange(lowest, highest);
+
+    // If decimal and int fluctuation are randomised using the same float it makes the overall graph line too centred
+    //The addition of decimals is important for immersion and player fantasy of actually being a broker.
+    lowest = (fluctuation <= -2) ? 0 : -100;
+    highest = (fluctuation >= 2) ? 0 : 100;
+
+    float decimal = RandomRange(lowest, highest);
+
+    // Combine both randomised numbers.
+    fluctuation += (decimal / 100);
+
+    return fluctuation;
+}

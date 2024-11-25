@@ -13,23 +13,12 @@
 // 480 bytes
 short marketGraph[116][2];
 
+void Timer();
 void NextDay();
 inline void SetSeed();
 
 static bool timerOn = true; 
-void Timer()
-{
-    using namespace std::chrono_literals;
 
-    timerOn = true;
-
-    while (timerOn) // Having it sleep causes delay on exit.
-    {
-        std::this_thread::sleep_for(3s);
-
-        NextDay();
-    }
-}
 
 int main()
 {
@@ -62,6 +51,20 @@ int main()
     PrintEndStats();
     std::cout << "\n";
     PrintEndGameMessage();
+}
+
+void Timer()
+{
+    using namespace std::chrono_literals;
+
+    timerOn = true;
+
+    while (timerOn) // Having it sleep causes delay on exit.
+    {
+        std::this_thread::sleep_for(3s);
+
+        NextDay();
+    }
 }
 
 void NextDay()
