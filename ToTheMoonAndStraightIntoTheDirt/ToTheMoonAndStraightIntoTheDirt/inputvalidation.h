@@ -1,5 +1,7 @@
 #pragma once
+
 #include <string>
+#include <iostream>
 
 // Checks each character in input string. Returns false if ANY non-digit is found.
 bool IsNumber(std::string amount)
@@ -35,7 +37,7 @@ std::string GetValidString()
     // Get input & check string isn't empty
     while (getline(std::cin, userInput) && userInput.empty())
     {
-        std::cerr << "Err. Nothing Entered. Try again. " << std::endl;
+        std::cerr << "Err. Nothing Entered. Try again.\n";
     }
     return userInput;
 }
