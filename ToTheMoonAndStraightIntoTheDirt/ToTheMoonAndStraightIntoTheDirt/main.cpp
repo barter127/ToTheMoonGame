@@ -13,9 +13,6 @@
 // 480 bytes
 short marketGraph[116][2];
 
-// RNG
-int rngWeight = 0;
-
 void NextDay();
 inline void SetSeed();
 
@@ -36,6 +33,8 @@ void Timer()
 
 int main()
 {
+    int rngWeight = 0;
+
     // Set console colour. BG: Black, Text: Green
     system("Color 0A");
 

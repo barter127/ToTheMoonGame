@@ -34,7 +34,7 @@ float WeightedRNG(int Lo, int Hi, int weight);
 
 // Prints stock graph (parameter) to console.
 template <size_t rows, size_t cols>
-void BufferGraph(short(&marketGraph)[rows][cols])
+void BufferGraph(short (&marketGraph)[rows][cols])
 {
     // Loop for height.
     for (int gHeight = GRAPH_TOP; gHeight > 0; gHeight--)
@@ -62,7 +62,7 @@ void BufferGraph(short(&marketGraph)[rows][cols])
 // Updates the markertArray so the last element of the array is new
 // Shifts the rest of the array left and discards the first value.
 template <size_t rows, size_t cols>
-void UpdateMarket(short(&marketGraph)[rows][cols])
+void UpdateMarket(short (&marketGraph)[rows][cols])
 {
     // Move all fields over by one.
     for (int i = 0; i < rows - 1; i++) // Loop 1 less than length.
@@ -112,7 +112,7 @@ void UpdateMarket(short(&marketGraph)[rows][cols])
 
 // Initalise Graph by running update market for the amount of rows
 template <size_t rows, size_t cols>
-void IntialiseGraph(short(&marketGraph)[rows][cols])
+void IntialiseGraph(short (&marketGraph)[rows][cols])
 {
     for (int i = 0; i < rows; i++)
     {
