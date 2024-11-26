@@ -31,6 +31,7 @@ bool timerOn = true;
 
 void Timer();
 void NextDay();
+void DisplayPriceSummary();
 inline void SetSeed();
 
 std::mutex m;
@@ -85,14 +86,6 @@ void Timer()
     }
 }
 
-void DisplayPriceSummary()
-{
-    // Print two DP to match money standards.
-    std::cout << "> Current price: " << TWO_DP << assetPrice << "\n";
-    std::cout << "> Money: " << TWO_DP << money << "\n";
-    std::cout << lastCommandOutput << "\n";
-}
-
 // Update nessecary variables. Redraw graph.
 void NextDay()
 {
@@ -103,11 +96,20 @@ void NextDay()
     // Clear console.
     system("cls"); // Not clearing looks more seamless but I prefer this over scrolling through console.
 
+
     UpdateMarket(marketGraph);
     BufferGraph(marketGraph);
     DrawGraphBuffer();
 
     DisplayPriceSummary();
+}
+
+void DisplayPriceSummary()
+{
+    // Print two DP to match money standards.
+    std::cout << "> Current price: " << TWO_DP << assetPrice << "\n";
+    std::cout << "> Money: " << TWO_DP << money << "\n";
+    std::cout << lastCommandOutput << "\n";
 }
 
 // Is this pointless? A bit, but the code inside is ugly. This adds clarity.
