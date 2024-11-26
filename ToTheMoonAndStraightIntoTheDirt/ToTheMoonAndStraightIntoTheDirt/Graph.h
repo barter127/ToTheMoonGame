@@ -99,17 +99,6 @@ void UpdateMarket(short (&marketGraph)[rows][cols])
         marketGraph[rows - 1][0] = graphHeight;
     }
 
-    // MAYBE IMPLEMENT PROPERLY
-    //if (assetPrice > GRAPH_TOP * moneyMultiplier)
-    //{
-    //    moneyMultiplier *= 2;
-    //}
-    //else if (assetPrice > GRAPH_TOP * moneyMultiplier / 2)
-    //{
-    //    moneyMultiplier /= 2;
-    //}
-
-
     lastGraphHeight = graphHeight;
 }
 

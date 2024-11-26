@@ -23,28 +23,21 @@ extern int rngWeight;
 bool inEvent = false;
 short eventDays = 0;
 
-const int MAX_MONEY_ROLL = 10'000;
-const int MAX_ASSET_ROLL = 1000;
+// Only used within file.
+static const int MAX_MONEY_ROLL = 10'000;
+static const int MAX_ASSET_ROLL = 1000;
 
-const int MAX_WEIGHT = 25;
-const int MAX_TREND_DAYS = 20;
+static const int MAX_WEIGHT = 25;
+static const int MAX_TREND_DAYS = 20;
 
 // Event pre-fix so not misused.
 
-// Better timer intermingeling.
-// Randomised Msgs.
-
-// unique lock
-// string array.
-// Fix £ sign.
-
 // Could of created a range but it's really funny to get a notif for an increase of just 1.
-
 void RollEvent()
 {
 	// Array of func ptrs. Simply just add new events here.
 	std::function<void()> everntArr[] = {
-		EventGiveMoney,
+		EventGainMoney,
 		EventLoseMoney,
 		EventGainAsset,
 		EventLoseAsset,
@@ -62,28 +55,26 @@ void RollEvent()
 	{
 		everntArr[randNum]();
 	}
-} 
+}
 
-// Increase Money
-void EventGiveMoney()
+// Increase money
+void EventGainMoney()
 {
 	timerOn = false;
 
 	int amount = rand() % MAX_MONEY_ROLL + 1;
 
-	std::stringstream msg;
-	msg << "You found £" << amount << ". Good on you :)"; 
-	std::string msgString = msg.str();
-	std::wstring msgW(msgString.begin(), msgString.end());
+	// Concat Wstring.
+	std::ostringstream msg;
+	msg << "You found " << amount << ". Good on you :)";
 
-	MessageBox(NULL, msgW.c_str(), L"Event!", MB_OK);
-
+	DisplayCustomTextbox(msg, L"Event!");
 	money += amount;
 
 	timerOn = true;
 }
 
-// Decrease Money
+// Decrease money.
 void EventLoseMoney()
 {
 	timerOn = false;
@@ -94,37 +85,32 @@ void EventLoseMoney()
 	if (money < amount)
 		amount = money;
 
-	std::stringstream msg;
-	msg << "Your oven broke. The cost for reapirs are £" << amount;
-	std::string msgString = msg.str();
-	std::wstring msgW(msgString.begin(), msgString.end());
+	// Concat Wstring.
+	std::ostringstream msg;
+	msg << "Your oven broke. The cost for repairs is " << amount;
 
-	MessageBox(NULL, msgW.c_str(), L"Event!", MB_OK);
-
+	DisplayCustomTextbox(msg, L"Event!");
 	money -= amount;
 
 	timerOn = true;
 }
 
-// Increase Asset Owned
 void EventGainAsset()
 {
 	timerOn = false;
+
 	int amount = rand() % MAX_ASSET_ROLL + 1;
 
-	std::stringstream msg;
-	msg << "You got given a bakers dozen! +" << amount << " doughnuts";
-	std::string msgString = msg.str();
-	std::wstring msgW(msgString.begin(), msgString.end());
+	// Concat Wstring.
+	std::ostringstream msg;
+	msg << "You got given a baker's dozen! +" << amount << " doughnuts";
 
-	MessageBox(NULL, msgW.c_str(), L"Event!", MB_OK);
-
+	DisplayCustomTextbox(msg, L"Event!");
 	assetOwned += amount;
 
 	timerOn = true;
 }
 
-// Decrease Asset Owned
 void EventLoseAsset()
 {
 	timerOn = false;
@@ -135,72 +121,64 @@ void EventLoseAsset()
 	if (assetOwned < amount)
 		amount = assetOwned;
 
-	std::stringstream msg;
+	// Concat Wstring.
+	std::ostringstream msg;
 	msg << amount << " of your doughnuts ... TURNED OUT TO BE BAGELS.";
-	std::string msgString = msg.str();
-	std::wstring msgW(msgString.begin(), msgString.end());
 
-	MessageBox(NULL, msgW.c_str(), L"Event!", MB_OK);
-
+	DisplayCustomTextbox(msg, L"Event!");
 	assetOwned -= amount;
 
 	timerOn = true;
 }
 
-// Stock will fall.
-void MarketFall()
+// Group set future logic.
+// IDK if it's better grouped. Less clarity but more concise.
+void SetMarketForecast(bool isRising)
 {
 	inEvent = true;
-	eventDays = rand() % MAX_TREND_DAYS - MAX_TREND_DAYS;
-	rngWeight = rand() % MAX_WEIGHT; -MAX_WEIGHT;
+	eventDays = rand() % MAX_TREND_DAYS;
+	rngWeight = rand() % MAX_WEIGHT + (isRising ? 1 : -MAX_WEIGHT);
 }
 
-// Stocks will rise.
-void MarketRise()
-{
-	inEvent = true;
-	eventDays = rand() % MAX_TREND_DAYS + 1;
-	rngWeight = rand() % MAX_WEIGHT; +1;
-}
-
-// Event. (Only difference is the pop-up)
-void EventMarketFall()
+void EventMarketRise()
 {
 	timerOn = false;
-	std::wstring msg = L"THE MARKET SHALL FALL >:D";
 
-	MessageBox(NULL, msg.c_str(), L"Event!", MB_OK);
+	// Concat Wstring.
+	std::ostringstream msg;
+	msg << "THE MARKET IS BOOMING! :D";
 
-	MarketFall();
+	DisplayCustomTextbox(msg, L"Event!");
+	SetMarketForecast(true);
 
 	timerOn = true;
 }
 
-
-// Event. (Only difference is the pop-up)
-void EventMarketRise()
+void EventMarketFall()
 {
 	timerOn = false;
-	std::wstring msg = L"THE MARKET IS BOOMING! :D";
 
-	MessageBox(NULL, msg.c_str(), L"Event!", MB_OK);
+	// Concat Wstring.
+	std::ostringstream msg;
+	msg << "THE MARKET SHALL FALL >:D";
 
-	MarketRise();
+	DisplayCustomTextbox(msg, L"Event!");
+	SetMarketForecast(false);
 
 	timerOn = true;
 }
 
 void MarketHint()
 {
-	// Arbitrary large number.
 	if (money > 5000)
 	{
 		timerOn = false;
 
 		float amount = money * 0.10; // 10%
 
-		std::stringstream msg;
+		std::ostringstream msg;
 		msg << "Want a market tip? it'll cost you £" << DP2 << amount;
+
 		std::string msgString = msg.str();
 		std::wstring msgW(msgString.begin(), msgString.end());
 
@@ -217,27 +195,13 @@ void MarketHint()
 			{
 				MessageBox(NULL, L"The market will SKYROCKET", L"Psstttt", MB_OK);
 
-				if (correctPrediction)
-				{
-					MarketRise();
-				}
-				else
-				{
-					MarketFall();
-				}
+				SetMarketForecast(correctPrediction);
 			}
 			else
 			{
 				MessageBox(NULL, L"The markets in a rough spot. Sell while you can.", L"Psstttt", MB_OK);
 
-				if (correctPrediction)
-				{
-					MarketRise();
-				}
-				else
-				{
-					MarketFall();
-				}
+				SetMarketForecast(correctPrediction);
 			}
 		}
 		else
@@ -245,4 +209,16 @@ void MarketHint()
 
 		timerOn = true;
 	}
+}
+
+
+// Might be worth moving in future. only used here for now so best here.
+void DisplayCustomTextbox(std::ostringstream& msg, const std::wstring& title)
+{
+	// Convert to readable type
+	std::string msgString = msg.str();
+	std::wstring msgW(msgString.begin(), msgString.end());
+
+	// Messagebox
+	MessageBox(NULL, msgW.c_str(), L"Event!", MB_OK);
 }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <sstream>
+
 // Add interactivity through more randomness and some drastic changes.
 
 extern bool inEvent;
@@ -7,20 +9,19 @@ extern short eventDays;
 
 void RollEvent();
 
-void EventGiveMoney();
+void EventGainMoney();
 void EventLoseMoney();
 
 void EventGainAsset();
 void EventLoseAsset();
 
-// Manipulates Market
-void MarketFall();
-void MarketRise();
+void SetMarketForecast(bool isRising);
+void SetMarketForecast(bool isRising);
 
-// Just the event.
 void EventMarketFall();
 void EventMarketRise();
 
+void DisplayCustomTextbox(std::ostringstream& msg, const std::wstring& title);
 
 void MarketHint();
 

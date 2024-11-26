@@ -18,13 +18,14 @@
 #define TWO_DP std::fixed << std::setprecision(2)
 
 // 480 bytes
+// With index being position on x value stored at [x][0] being position y and value stored at [x][1] is fluctuation.
 short marketGraph[116][2];
 
 // Player statistics.
-double money = 5001; // Needs negative values for possible debt mechanic.
+double money = 2500; // Needs negative values for possible debt mechanic.
 unsigned int assetOwned = 0;
 float assetPrice = 25.0;
-unsigned int day = 1; // Maybe problematic for long play sessions.
+unsigned int day = 1; // May be problematic for long play sessions.
 
 bool timerOn = true; 
 
@@ -32,10 +33,6 @@ void Timer();
 void NextDay();
 inline void SetSeed();
 
-// Switch Graph
-// // Find some sort of way to have a tick up number.
-
-// I DON'T WANNA I DON'T WANNA
 std::mutex m;
 std::condition_variable cv;
 
@@ -44,8 +41,7 @@ int main()
     // Set console colour. BG: Black, Text: Green
     system("Color 0A");
 
-    //PLEASE PLEASE PLEASE PLEASE PLEASE PLEASE PLEASE PLEASE DON'T FORGET TO UNCOMMENT THIS
-    //DisplayTitle();
+    DisplayTitle();
 
     SetSeed();
 
@@ -89,6 +85,14 @@ void Timer()
     }
 }
 
+void DisplayPriceSummary()
+{
+    // Print two DP to match money standards.
+    std::cout << "> Current price: " << TWO_DP << assetPrice << "\n";
+    std::cout << "> Money: " << TWO_DP << money << "\n";
+    std::cout << lastCommandOutput << "\n";
+}
+
 // Update nessecary variables. Redraw graph.
 void NextDay()
 {
@@ -103,10 +107,7 @@ void NextDay()
     BufferGraph(marketGraph);
     DrawGraphBuffer();
 
-    // Print two DP to match money standards.
-    std::cout << "> Current price: " << TWO_DP << assetPrice << "\n";
-    std::cout << "> Money: " << TWO_DP << money << "\n";
-    std::cout << lastCommandOutput << "\n";
+    DisplayPriceSummary();
 }
 
 // Is this pointless? A bit, but the code inside is ugly. This adds clarity.
