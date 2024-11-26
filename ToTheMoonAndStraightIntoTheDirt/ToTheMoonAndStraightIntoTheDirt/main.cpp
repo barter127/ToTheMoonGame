@@ -32,6 +32,7 @@ bool timerOn = true;
 void Timer();
 void NextDay();
 void DisplayPriceSummary();
+void ClearInput();
 inline void SetSeed();
 
 std::mutex m;
@@ -69,20 +70,19 @@ int main()
 
 // Is always active in some way.
 // Basically the beating heart of the program. It deserves to be in main.
+// Messy implementation on a much larger scale but at this level it's fine.
 void Timer()
 {
     using namespace std::chrono_literals;
 
-    // PLEASE UPDATE THIS I WILL CRY.
-    while (true) // Having it sleep causes delay on exit.
+    while (true)
     {
-        std::this_thread::sleep_for(3s);
-
+        // Only activate if not in event.
         if (timerOn)
         {
+            std::this_thread::sleep_for(3s);
             NextDay();
         }
-
     }
 }
 
@@ -95,7 +95,7 @@ void NextDay()
 
     // Clear console.
     system("cls"); // Not clearing looks more seamless but I prefer this over scrolling through console.
-
+    ClearInput();
 
     UpdateMarket(marketGraph);
     BufferGraph(marketGraph);
@@ -110,6 +110,11 @@ void DisplayPriceSummary()
     std::cout << "> Current price: " << TWO_DP << assetPrice << "\n";
     std::cout << "> Money: " << TWO_DP << money << "\n";
     std::cout << lastCommandOutput << "\n";
+}
+
+void ClearInput()
+{
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max());
 }
 
 // Is this pointless? A bit, but the code inside is ugly. This adds clarity.
