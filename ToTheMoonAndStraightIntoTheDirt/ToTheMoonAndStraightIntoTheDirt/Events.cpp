@@ -2,6 +2,7 @@
 
 #include <Windows.h>
 #include <sstream>
+#include <functional>
 
 // Player statistics.
 extern double money;
@@ -27,15 +28,52 @@ short eventDays = 0;
 // Wstringstream
 // unique lock
 // string array.
+// Fix £ sign.
+
+// Could of created a range but it's really funny to get a notif for an increase of just 1.
+
+// Array of func ptrs.
+std::function<void()> everntArr[] = {
+	EventGiveMoney,
+	EventLoseMoney,
+	EventGainAsset,
+	EventLoseAsset,
+	EventMarketFall,
+	EventMarketRise
+};
+
+void RollEvent()
+{
+	// rool 1 - 1000
+
+	int randNum = rand() % 100;
+
+	// Could be optimised as array doesn't change size.
+	int eventAmount = sizeof everntArr / sizeof everntArr[0];
+
+	if (randNum < eventAmount)
+	{
+		everntArr[randNum];
+	}
+	int hi = 0;
+	// GRAPH CAN STILL GO OUT OF BOUNDS!!!
+}
 
 // Increase Money
 void EventGiveMoney()
 {
 	timerOn = false;
-	std::wstring msg = L"You found money!";
 
-	MessageBox(NULL, msg.c_str(), L"Event!", MB_OK);
-	money += 1000;
+	int amount = rand() % 10'000;
+
+	std::stringstream msg;
+	msg << "You found £" << amount << ". Good on you :)"; 
+	std::string msgString = msg.str();
+	std::wstring msgW(msgString.begin(), msgString.end());
+
+	MessageBox(NULL, msgW.c_str(), L"Event!", MB_OK);
+
+	money += amount;
 
 	timerOn = true;
 }
@@ -44,13 +82,19 @@ void EventGiveMoney()
 void EventLoseMoney()
 {
 	timerOn = false;
-	std::wstring msg = L"You're oven broke. Pay for repairs :(";
 
-	MessageBox(NULL, msg.c_str(), L"Event!", MB_OK);
+	int amount = rand() % 10'000;
+
+	std::stringstream msg;
+	msg << "Your oven broke. The cost for reapirs are £" << amount;
+	std::string msgString = msg.str();
+	std::wstring msgW(msgString.begin(), msgString.end());
+
+	MessageBox(NULL, msgW.c_str(), L"Event!", MB_OK);
 
 	// Cap decrease.
-	if (money >= 1000) 
-		money -= 1000;
+	if (money >= amount) 
+		money -= amount;
 	else
 		money = 0;
 
@@ -61,11 +105,16 @@ void EventLoseMoney()
 void EventGainAsset()
 {
 	timerOn = false;
-	std::wstring msg = L"You were accidentally given a bakers dozen!";
+	int amount = rand() % 1000;
 
-	MessageBox(NULL, msg.c_str(), L"Event!", MB_OK);
+	std::stringstream msg;
+	msg << "You got given a bakers dozen! +" << amount << " doughnuts";
+	std::string msgString = msg.str();
+	std::wstring msgW(msgString.begin(), msgString.end());
 
-	assetOwned += 100;
+	MessageBox(NULL, msgW.c_str(), L"Event!", MB_OK);
+
+	assetOwned += amount;
 
 	timerOn = true;
 }
@@ -74,12 +123,18 @@ void EventGainAsset()
 void EventLoseAsset()
 {
 	timerOn = false;
-	std::wstring msg = L"You were accidentally given a bakers dozen";
 
-	MessageBox(NULL, msg.c_str(), L"Event!", MB_OK);
+	int amount = rand() % 1000;
 
-	if (assetOwned >= 100)
-		assetOwned -= 100;
+	std::stringstream msg;
+	msg << amount << " of your doughnuts ... TURNED OUT TO BE BAGELS.";
+	std::string msgString = msg.str();
+	std::wstring msgW(msgString.begin(), msgString.end());
+
+	MessageBox(NULL, msgW.c_str(), L"Event!", MB_OK);
+
+	if (assetOwned >= amount)
+		assetOwned -= amount;
 	else
 		assetOwned = 0;
 

@@ -1,7 +1,11 @@
 #pragma once
 
+// Add interactivity through more randomness and some drastic changes.
+
 extern bool inEvent;
 extern short eventDays;
+
+void RollEvent();
 
 void EventGiveMoney();
 void EventLoseMoney();

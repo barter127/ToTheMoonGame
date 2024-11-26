@@ -53,8 +53,6 @@ int main()
     // Start Threads.
     std::thread Countdown(Timer);
 
-    EventMarketRise();
-
     // Game loop
     while (!endGame)
     {
@@ -94,6 +92,7 @@ void NextDay()
 {
     day++;
     UpdateEventDays();
+    RollEvent();
 
     // Clear console.
     system("cls"); // Not clearing looks more seamless but I prefer this over scrolling through console.
