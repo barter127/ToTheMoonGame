@@ -136,7 +136,7 @@ int AdjustWeight(int fluctuation , int weight)
 float RandomiseFluctuation(int &weight)
 {
     // Limit price from going out of graph bounds.
-    int lowest = (assetPrice <= GRAPH_BOTTOM + 2) ? 0 : -2;
+    int lowest = (assetPrice <= GRAPH_BOTTOM + 3) ? 0 : -2;
     int highest = (assetPrice >= (GRAPH_TOP * moneyMultiplier) - 2) ? 0 : 2;
 
     float fluctuation = WeightedRNG(lowest, highest, weight);

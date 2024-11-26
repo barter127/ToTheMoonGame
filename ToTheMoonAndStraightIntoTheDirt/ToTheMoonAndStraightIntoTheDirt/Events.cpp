@@ -19,20 +19,24 @@ extern int rngWeight;
 bool inEvent = false;
 short eventDays = 0;
 
+const int MAX_MONEY_ROLL = 10'000;
+const int MAX_ASSET_ROLL = 1000;
+
+const int MAX_WEIGHT = 25;
+const int MAX_TREND_DAYS = 20;
+
 // Event pre-fix so not misused.
 
-// randomised vars + output in window.
 // Better timer intermingeling.
 // Randomised Msgs.
 
-// Wstringstream
 // unique lock
 // string array.
 // Fix £ sign.
 
 // Could of created a range but it's really funny to get a notif for an increase of just 1.
 
-// Array of func ptrs.
+// Array of func ptrs. Simply just add new events here.
 std::function<void()> everntArr[] = {
 	EventGiveMoney,
 	EventLoseMoney,
@@ -44,8 +48,6 @@ std::function<void()> everntArr[] = {
 
 void RollEvent()
 {
-	// rool 1 - 1000
-
 	int randNum = rand() % 100;
 
 	// Could be optimised as array doesn't change size.
@@ -53,18 +55,16 @@ void RollEvent()
 
 	if (randNum < eventAmount)
 	{
-		everntArr[randNum];
+		everntArr[randNum]();
 	}
-	int hi = 0;
-	// GRAPH CAN STILL GO OUT OF BOUNDS!!!
-}
+} 
 
 // Increase Money
 void EventGiveMoney()
 {
 	timerOn = false;
 
-	int amount = rand() % 10'000;
+	int amount = rand() % MAX_MONEY_ROLL + 1;
 
 	std::stringstream msg;
 	msg << "You found £" << amount << ". Good on you :)"; 
@@ -83,7 +83,11 @@ void EventLoseMoney()
 {
 	timerOn = false;
 
-	int amount = rand() % 10'000;
+	int amount = rand() % MAX_MONEY_ROLL + 1;
+
+	// Cap decrease.
+	if (money < amount)
+		amount = money;
 
 	std::stringstream msg;
 	msg << "Your oven broke. The cost for reapirs are £" << amount;
@@ -92,11 +96,7 @@ void EventLoseMoney()
 
 	MessageBox(NULL, msgW.c_str(), L"Event!", MB_OK);
 
-	// Cap decrease.
-	if (money >= amount) 
-		money -= amount;
-	else
-		money = 0;
+	money -= amount;
 
 	timerOn = true;
 }
@@ -105,7 +105,7 @@ void EventLoseMoney()
 void EventGainAsset()
 {
 	timerOn = false;
-	int amount = rand() % 1000;
+	int amount = rand() % MAX_ASSET_ROLL + 1;
 
 	std::stringstream msg;
 	msg << "You got given a bakers dozen! +" << amount << " doughnuts";
@@ -124,7 +124,11 @@ void EventLoseAsset()
 {
 	timerOn = false;
 
-	int amount = rand() % 1000;
+	int amount = rand() % MAX_ASSET_ROLL + 1;
+
+	// Cap decrease.
+	if (assetOwned < amount)
+		amount = assetOwned;
 
 	std::stringstream msg;
 	msg << amount << " of your doughnuts ... TURNED OUT TO BE BAGELS.";
@@ -133,10 +137,7 @@ void EventLoseAsset()
 
 	MessageBox(NULL, msgW.c_str(), L"Event!", MB_OK);
 
-	if (assetOwned >= amount)
-		assetOwned -= amount;
-	else
-		assetOwned = 0;
+	assetOwned -= amount;
 
 	timerOn = true;
 }
@@ -165,8 +166,8 @@ void EventMarketRise()
 	MessageBox(NULL, msg.c_str(), L"Event!", MB_OK);
 
 	inEvent = true;
-	eventDays = 10;
-	rngWeight = 10;
+	eventDays =  rand() % MAX_TREND_DAYS + 1;
+	rngWeight = rand() % MAX_WEIGHT; + 1;
 
 	timerOn = true;
 }

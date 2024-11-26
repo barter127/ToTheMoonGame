@@ -20,6 +20,7 @@ inline void UpdateEventDays()
 {
 	if (eventDays > 0)
 		eventDays--;
-	else if (inEvent) // Prevent setting correctly set bool.
+
+	else if (inEvent)
 		inEvent = false;
 }
