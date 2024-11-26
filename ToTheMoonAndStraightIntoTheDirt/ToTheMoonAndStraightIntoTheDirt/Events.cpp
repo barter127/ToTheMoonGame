@@ -24,6 +24,10 @@ short eventDays = 0;
 // Better timer intermingeling.
 // Randomised Msgs.
 
+// Wstringstream
+// unique lock
+// string array.
+
 // Increase Money
 void EventGiveMoney()
 {
