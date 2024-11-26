@@ -6,6 +6,8 @@
 #include <iostream>
 #include <iomanip>
 
+#define DP2 std::fixed << std::setprecision(2)
+
 // Player statistics.
 extern double money;
 extern unsigned int assetOwned;
@@ -198,7 +200,7 @@ void MarketHint()
 		float amount = money * 0.10; // 10%
 
 		std::stringstream msg;
-		msg << "Want a market tip? it'll cost you £" << std::fixed << std::setprecision(2) << amount;
+		msg << "Want a market tip? it'll cost you £" << DP2 << amount;
 		std::string msgString = msg.str();
 		std::wstring msgW(msgString.begin(), msgString.end());
 

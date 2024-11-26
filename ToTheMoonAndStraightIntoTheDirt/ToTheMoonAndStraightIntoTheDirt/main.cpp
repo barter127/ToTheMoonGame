@@ -41,8 +41,6 @@ std::condition_variable cv;
 
 int main()
 {
-    MarketHint();
-
     // Set console colour. BG: Black, Text: Green
     system("Color 0A");
 
