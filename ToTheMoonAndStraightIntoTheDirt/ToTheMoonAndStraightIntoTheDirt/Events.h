@@ -13,8 +13,16 @@ void EventLoseMoney();
 void EventGainAsset();
 void EventLoseAsset();
 
+// Manipulates Market
+void MarketFall();
+void MarketRise();
+
+// Just the event.
 void EventMarketFall();
 void EventMarketRise();
+
+
+void MarketHint();
 
 inline void UpdateEventDays()
 {

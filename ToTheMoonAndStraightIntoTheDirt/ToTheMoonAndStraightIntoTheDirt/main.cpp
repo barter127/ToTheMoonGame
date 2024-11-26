@@ -2,6 +2,7 @@
 #include <condition_variable>
 #include <mutex>
 #include <iostream>
+#include <iomanip>
 #include <thread>
 #include <string>
 #include <sstream>
@@ -14,11 +15,13 @@
 
 #include "Events.h"
 
+#define TWO_DP std::fixed << std::setprecision(2)
+
 // 480 bytes
 short marketGraph[116][2];
 
 // Player statistics.
-double money = 1000; // Needs negative values for possible debt mechanic.
+double money = 5001; // Needs negative values for possible debt mechanic.
 unsigned int assetOwned = 0;
 float assetPrice = 25.0;
 unsigned int day = 1; // Maybe problematic for long play sessions.
@@ -29,16 +32,17 @@ void Timer();
 void NextDay();
 inline void SetSeed();
 
-// Event system.
 // Switch Graph
 // // Find some sort of way to have a tick up number.
-// Vertical increase (Prolly not)
 
+// I DON'T WANNA I DON'T WANNA
 std::mutex m;
 std::condition_variable cv;
 
 int main()
 {
+    MarketHint();
+
     // Set console colour. BG: Black, Text: Green
     system("Color 0A");
 
@@ -101,8 +105,9 @@ void NextDay()
     BufferGraph(marketGraph);
     DrawGraphBuffer();
 
-    std::cout << "> Current price: " << assetPrice << "\n";
-    std::cout << "> Money: " << money << "\n";
+    // Print two DP to match money standards.
+    std::cout << "> Current price: " << TWO_DP << assetPrice << "\n";
+    std::cout << "> Money: " << TWO_DP << money << "\n";
     std::cout << lastCommandOutput << "\n";
 }
 
