@@ -94,8 +94,7 @@ void NextDay()
     RollEvent();
 
     // Clear console.
-    system("cls"); // Not clearing looks more seamless but I prefer this over scrolling through console.
-    ClearInput();
+    system("cls");
 
     UpdateMarket(marketGraph);
     BufferGraph(marketGraph);
@@ -110,11 +109,6 @@ void DisplayPriceSummary()
     std::cout << "> Current price: " << TWO_DP << assetPrice << "\n";
     std::cout << "> Money: " << TWO_DP << money << "\n";
     std::cout << lastCommandOutput << "\n";
-}
-
-void ClearInput()
-{
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max());
 }
 
 // Is this pointless? A bit, but the code inside is ugly. This adds clarity.

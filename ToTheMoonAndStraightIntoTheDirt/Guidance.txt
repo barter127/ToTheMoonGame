@@ -1,0 +1,18 @@
+Game loop:
+- Every 3 seconds a new day will start and the price of the asset will increase or decrease.
+- Price is more likely to increase if it increased before and vice versa.
+- Buy high and sell low to make as much money as possible!
+
+Command List:
+        >> buy <amount>: Buys amount of doughnuts"
+        >> sell <amount>: Sells amount of doughnuts"
+        >> help: Dude you just used it you know what it does"
+        >> dong: Prints the amount of money you have in Vietnamese Dong"
+        >> share: Prints your share percentage"
+        >> exit: exits game"
+
+Events:
+- Every day there is a chance for an event to occur.
+- They can be positive or negative increase to player stats.
+- They can also effect the market health positively or negatively.
+- One event gives the player a market prediction. The prediction is programmed to sometimes be incorrect
