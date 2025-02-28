@@ -32,17 +32,14 @@ bool timerOn = true;
 void Timer();
 void NextDay();
 void DisplayPriceSummary();
-void ClearInput();
 inline void SetSeed();
-
-std::mutex m;
-std::condition_variable cv;
 
 int main()
 {
-    // Set console colour. BG: Black, Text: Green
+    // Set console colour. BG: Black, Text: Green.
     system("Color 0A");
 
+    // Title Screen on boot up.
     DisplayTitle();
 
     SetSeed();
@@ -50,7 +47,7 @@ int main()
     IntialiseGraph(marketGraph);
     NextDay();
    
-    // Start Threads.
+    // Start threads for graph update timer.
     std::thread Countdown(Timer);
 
     // Game loop
@@ -60,9 +57,12 @@ int main()
         std::cout << lastCommandOutput << "\n";
     }
 
-    // Game end
+    // GAME END
+
+    // Safely close timer threads.
     Countdown.join();
 
+    // Display end game statistics with randomised goodbye message.
     PrintEndStats();
     std::cout << "\n";
     PrintEndGameMessage();
@@ -80,7 +80,7 @@ void Timer()
         // Only activate if not in event.
         if (timerOn)
         {
-            std::this_thread::sleep_for(3s);
+            std::this_thread::sleep_for(0.5s);
             NextDay();
         }
     }
@@ -90,12 +90,15 @@ void Timer()
 void NextDay()
 {
     day++;
+
+    // Check if event should happen.
     UpdateEventDays();
     RollEvent();
 
     // Clear console.
     system("cls");
 
+    // Update and Draw Graph.
     UpdateMarket(marketGraph);
     BufferGraph(marketGraph);
     DrawGraphBuffer();
@@ -103,6 +106,7 @@ void NextDay()
     DisplayPriceSummary();
 }
 
+// Display price statistics in detailed fashion (rounding to two DP)
 void DisplayPriceSummary()
 {
     // Print two DP to match money standards.
