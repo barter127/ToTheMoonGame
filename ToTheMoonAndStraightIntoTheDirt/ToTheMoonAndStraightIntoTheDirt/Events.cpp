@@ -46,11 +46,12 @@ void RollEvent()
 		MarketHint
 	};
 
-	int randNum = rand() % 100;
+	int randNum = rand() % 250;
 
 	// Could be optimised as array doesn't change size.
 	int eventAmount = sizeof everntArr / sizeof everntArr[0];
 
+	// If number rolled correlates to event.
 	if (randNum < eventAmount)
 	{
 		everntArr[randNum]();
@@ -60,6 +61,7 @@ void RollEvent()
 // Increase money
 void EventGainMoney()
 {
+	// Pause graph update timer.
 	timerOn = false;
 
 	int amount = rand() % MAX_MONEY_ROLL + 1;
@@ -77,6 +79,7 @@ void EventGainMoney()
 // Decrease money.
 void EventLoseMoney()
 {
+	// Pause graph update timer.
 	timerOn = false;
 
 	int amount = rand() % MAX_MONEY_ROLL + 1;
@@ -97,6 +100,7 @@ void EventLoseMoney()
 
 void EventGainAsset()
 {
+	// Pause graph update timer.
 	timerOn = false;
 
 	int amount = rand() % MAX_ASSET_ROLL + 1;
@@ -113,6 +117,7 @@ void EventGainAsset()
 
 void EventLoseAsset()
 {
+	// Pause graph update timer.
 	timerOn = false;
 
 	int amount = rand() % MAX_ASSET_ROLL + 1;
@@ -142,6 +147,7 @@ void SetMarketForecast(bool isRising)
 
 void EventMarketRise()
 {
+	// Pause graph update timer.
 	timerOn = false;
 
 	// Concat Wstring.
@@ -156,6 +162,7 @@ void EventMarketRise()
 
 void EventMarketFall()
 {
+	// Pause graph update timer.
 	timerOn = false;
 
 	// Concat Wstring.
@@ -170,8 +177,10 @@ void EventMarketFall()
 
 void MarketHint()
 {
+	// If player has enough money to purchase hint.
 	if (money > 5000)
 	{
+		// Pause graph update timer.
 		timerOn = false;
 
 		float amount = money * 0.10; // 10%
@@ -179,29 +188,34 @@ void MarketHint()
 		std::ostringstream msg;
 		msg << "Want a market tip? it'll cost you £" << DP2 << amount;
 
+		// Concat w string
 		std::string msgString = msg.str();
 		std::wstring msgW(msgString.begin(), msgString.end());
 
 		int decision = MessageBox(NULL, msgW.c_str(), L"Psstttt", MB_YESNO);
 
+		// If player accepted advice.
 		if (decision == IDYES)
 		{
 			money -= amount;
 
+			// Randomise advice type given.
 			bool positivePrediction = rand() % 2 == 0;
-			bool correctPrediction = rand() % 2 == 0;
+
+			// Determine if advice was correct.
+			bool isCorrectPrediction = rand() % 2 == 0;
 
 			if (positivePrediction)
 			{
 				MessageBox(NULL, L"The market will SKYROCKET", L"Psstttt", MB_OK);
 
-				SetMarketForecast(correctPrediction);
+				SetMarketForecast(isCorrectPrediction);
 			}
 			else
 			{
 				MessageBox(NULL, L"The markets in a rough spot. Sell while you can.", L"Psstttt", MB_OK);
 
-				SetMarketForecast(correctPrediction);
+				SetMarketForecast(isCorrectPrediction);
 			}
 		}
 		else

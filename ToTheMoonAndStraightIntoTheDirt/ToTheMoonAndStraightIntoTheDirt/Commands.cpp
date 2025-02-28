@@ -25,6 +25,8 @@ std::map<std::string, std::function<void()>> commands {
     {"exit", Exit}
 };
 
+// Allows command system to recieve parameters from different data types
+// Eg. get int (buy amount) from input string.
 #pragma region Overloaded Conversion Functions
 
 // To Int.
@@ -65,12 +67,14 @@ void GetCommand()
 
     while (!validCommand)
     {
+        // Get user input
         getline(std::cin, commandInput);
         std::string commandWord = GetCommandWord(commandInput);
 
         // Accept any casing.
         commandWord = ToLowerCase(commandWord);
 
+        // If command valid.
         if (commands.find(commandWord) != commands.end())
         {
             commands[commandWord]();
@@ -125,6 +129,7 @@ varType GetParameter(std::string commandLine, typename varType, int parmIndex)
 // Commands.
 void Buy()
 {
+    // Get user parameters.
     int amountToBuy = GetParameter(commandInput, 0, 1);
     float cost = amountToBuy * assetPrice;
 
@@ -151,6 +156,7 @@ void Buy()
 
 void Sell()
 {
+    // Get user parameters.
     int amountToSell = GetParameter(commandInput, 0, 1);
     float sellPrice = amountToSell * assetPrice; // Calc price of sale.
 
@@ -160,6 +166,7 @@ void Sell()
 
     else // If Valid input (selling an amount they own and selling at least 1)
     {
+        // Update player statistics.
         assetOwned -= amountToSell;
         money += sellPrice;
         UpdateEndStats(sellPrice, amountToSell);
@@ -171,6 +178,7 @@ void Sell()
     }
 }
 
+// Print lits of commands.
 void Help()
 {
     std::ostringstream buffer;
@@ -184,6 +192,7 @@ void Help()
     lastCommandOutput = buffer.str();
 }
 
+// Print user money in vietnamese dong.
 void Dong()
 {
     std::ostringstream buffer;
@@ -191,6 +200,7 @@ void Dong()
     lastCommandOutput = buffer.str();
 }
 
+// Print percentage share of owned assets.
 void Share()
 {
     std::ostringstream buffer;

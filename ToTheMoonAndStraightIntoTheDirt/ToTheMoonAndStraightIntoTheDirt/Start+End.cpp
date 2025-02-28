@@ -153,7 +153,7 @@ void PrintEndGameMessage()
 		std::cout << "That's all Folks!";
 		break;
 	case(Bane):
-		std::cout << "Is that fucking bane?! Holy shit run!!!";
+		std::cout << "Is that bane?! Holy shit run!!!";
 		break;
 	case(EntrepeneurCEO):
 		std::cout << "Goodbye \"Entrepeneur CEO\"";

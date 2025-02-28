@@ -37,12 +37,13 @@ std::string GetValidString()
     // Get input & check string isn't empty
     while (getline(std::cin, userInput) && userInput.empty())
     {
-        std::cerr << "Err. Nothing Entered. Try again.\n";
+        std::cerr << "[!]Err. Nothing Entered. Try again.\n";
     }
     return userInput;
 }
 
-// Prolly only used to find spaces but modularity!
+// Find nth time lookingFor appears in string strToCheck.
+// Mainly used for command system to find where parameters may be.
 int NthOccurence(std::string strToCheck, std::string lookingFor, int n)
 {
     size_t pos = 0;
