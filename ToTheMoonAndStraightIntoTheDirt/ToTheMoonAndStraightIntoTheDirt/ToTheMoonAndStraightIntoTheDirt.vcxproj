@@ -130,7 +130,6 @@
     <ClCompile Include="Commands.cpp" />
     <ClCompile Include="Events.cpp" />
     <ClCompile Include="Graph.cpp" />
-    <ClCompile Include="Fail_Investor.cpp" />
     <ClCompile Include="InputValidation.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Start+End.cpp" />

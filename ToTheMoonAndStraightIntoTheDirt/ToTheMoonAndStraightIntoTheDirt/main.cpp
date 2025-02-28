@@ -80,7 +80,7 @@ void Timer()
         // Only activate if not in event.
         if (timerOn)
         {
-            std::this_thread::sleep_for(0.5s);
+            std::this_thread::sleep_for(3s);
             NextDay();
         }
     }
